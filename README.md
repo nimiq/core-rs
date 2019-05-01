@@ -38,7 +38,7 @@ Besides [Rust](https://www.rust-lang.org/learn/get-started#installing-rust) itse
 To download from [crates.io](https://crates.io), compile and install the client:
 
 ```bash
-cargo install nimiq-client
+cargo +nightly install nimiq-client
 ```
 
 The binary will be installed in your Cargo directory, which is usually at `$HOME/.cargo/bin`, and should be available in your `$PATH`.
@@ -50,21 +50,27 @@ Compiling the project is achieved through [`cargo`](https://doc.rust-lang.org/ca
 ```bash
 git clone https://github.com/nimiq/core-rs
 cd core-rs
-rustup override set nightly # You need rust nightly. If you use rustup you can set it like this.
-cargo build
+cargo +nightly build
 ```
 
 Note that this will build it in debug mode, which is not as performant. To get the most speed out of the client, build it in release mode:
 
 ```bash
-cargo build --release
+cargo +nightly build --release
 ```
 
 If you want to install the client onto your system (into `$HOME/.cargo/bin`), run:
 
 ```bash
-cargo install --path .
+cargo +nightly install --path client/
 ```
+
+Alternatively you can install directly from git:
+
+```bash
+cargo +nightly install --git https://github.com/nimiq/core-rs.git
+```
+
 
 After installing the client you can use it like you had downloaded it from [crates.io](https://crates.io).
 
