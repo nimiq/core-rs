@@ -169,7 +169,10 @@ impl ConnectionPoolState {
 
         // Add to peer address map if available.
         if let Some(peer_address) = peer_address {
-            self.connections_by_peer_address.insert(peer_address, connection_id);
+            let existing_connection = self.connections_by_peer_address.insert(peer_address, connection_id);
+
+            // Make sure we were not overwriting any previous connection id
+            assert_eq!(existing_connection, None);
         }
         connection_id
     }
@@ -177,7 +180,10 @@ impl ConnectionPoolState {
     /// Add a new connection to the connection pool.
     fn add_peer_address(&mut self, connection_id: ConnectionId, peer_address: Arc<PeerAddress>) {
         // Add to peer address map.
-        self.connections_by_peer_address.insert(peer_address, connection_id);
+        let existing_connection = self.connections_by_peer_address.insert(peer_address, connection_id);
+
+        // Make sure we were not overwriting any previous connection id
+        assert_eq!(existing_connection, None);
     }
 
     /// Remove a connection from the connection pool if it is present.
@@ -436,22 +442,20 @@ impl ConnectionPool {
 
         // Connection request accepted.
 
-        // Create fresh ConnectionInfo instance.
-        let mut state = self.state.write();
-        let connection_id = state.add(ConnectionInfo::outbound(peer_address.clone()));
-
         // Choose connector type and call.
         let handle = match self.websocket_connector.connect(peer_address.clone()) {
             Ok(handle) => handle,
             Err(e) => {
                 warn!("Could not connect outbound to {}, error: {}", peer_address, e);
-                state.remove(connection_id);
                 return false;
             },
         };
-        if let Some(info) = state.connections.get_mut(connection_id) {
-            info.set_connection_handle(handle);
-        }
+
+        // Create fresh ConnectionInfo instance.
+        let mut state = self.state.write();
+        let connection_id = state.add(ConnectionInfo::outbound(peer_address.clone()));
+        state.connections.get_mut(connection_id).unwrap().set_connection_handle(handle);
+
         state.connecting_count += 1;
 
         true
@@ -684,7 +688,7 @@ impl ConnectionPool {
         let mut is_inbound = false;
         // Read lock.
         {
-            let state = self.state.read();
+            let mut state = self.state.write();
             let info = state.connections.get(connection_id).unwrap_or_else(|| panic!("Missing connection #{} in on_close", connection_id));
             let network_connection = info.network_connection().unwrap();
 
@@ -709,14 +713,21 @@ impl ConnectionPool {
 
                                 // Abort connection.
                                 if let Some(handle) = stored_connection.connection_handle() {
-                                    handle.abort();
+                                    handle.abort(CloseType::SimultaneousConnection);
                                 }
+
+                                let stored_connection_id = *stored_connection_id;
+
+                                // Clean up the state from the changes made by connect_outbound()
+                                state.connections.remove(stored_connection_id);
+                                state.connections_by_peer_address.remove(&peer_address);
+
                                 // The assert does not make much sense since the closing happens asynchronously.
                                 // assert!(state.get_connection_by_peer_address(&peer_address).is_none(), "ConnectionInfo not removed");
                             },
                             ConnectionState::Established => {
                                 // If we have another established connection to this peer, close this connection.
-                                ConnectionPool::close(info.network_connection(), CloseType::DuplicateConnection);
+                                ConnectionPool::close(info.network_connection(), CloseType::SimultaneousConnection);
                                 return;
                             },
                             ConnectionState::Negotiating => {
