@@ -499,6 +499,13 @@ impl InventoryAgent {
     fn on_block(&self, mut block: Block) {
         //let lock = self.mutex.lock();
 
+        // XXX We currently only support and expect full blocks.
+        if block.is_light() {
+            error!("Expected full but received light block from {} - dropping peer", self.peer.peer_address());
+            self.peer.channel.close(CloseType::InvalidBlock);
+            return;
+        }
+
         let hash = block.header.hash::<Blake2bHash>();
         trace!("[BLOCK] #{} ({} txs) from {}", block.header.height, block.body.as_ref().unwrap().transactions.len(), self.peer.peer_address());
 
@@ -509,6 +516,7 @@ impl InventoryAgent {
             warn!("Unsolicited block from {} - discarding", self.peer.peer_address());
             return;
         }
+
         // Give up read lock before notifying.
         drop(state);
 
