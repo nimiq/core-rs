@@ -31,16 +31,16 @@ tokio = "0.1"
 tokio-tls = "0.2"
 tokio-tungstenite = { git = "https://github.com/jeffesquivels/tokio-tungstenite.git", rev = "fe93abe2aac02645f3960659e30fcb68d02a8229" }
 url = "1.7"
-beserial = { path = "../beserial", version = "0.1.0" }
-beserial_derive = { path = "../beserial/beserial_derive", version = "0.1.0" }
-nimiq-blockchain = { path = "../blockchain", version = "0.1.0" }
-nimiq-collections = { path = "../collections", version = "0.1.0" }
-nimiq-keys = { path = "../keys", version = "0.1.0" }
-nimiq-hash = { path = "../hash", version = "0.1.0" }
-nimiq-macros = { path = "../macros", version = "0.1.0" }
-nimiq-messages = { path = "../messages", version = "0.1.0" }
-nimiq-network-primitives = { path = "../network-primitives", version = "0.1.0", features = ["all"] }
-nimiq-utils = { path = "../utils", version = "0.1.0", features = ["timers", "observer", "mutable-once", "time", "unique-ptr", "iterators", "locking", "rate-limit", "unique-id"] }
+beserial = { path = "../beserial", version = "0.1" }
+beserial_derive = { path = "../beserial/beserial_derive", version = "0.1" }
+nimiq-blockchain = { path = "../blockchain", version = "0.1" }
+nimiq-collections = { path = "../collections", version = "0.1" }
+nimiq-keys = { path = "../keys", version = "0.1" }
+nimiq-hash = { path = "../hash", version = "0.1" }
+nimiq-macros = { path = "../macros", version = "0.1" }
+nimiq-messages = { path = "../messages", version = "0.1" }
+nimiq-network-primitives = { path = "../network-primitives", version = "0.1", features = ["all"] }
+nimiq-utils = { path = "../utils", version = "0.1", features = ["timers", "observer", "mutable-once", "time", "unique-ptr", "iterators", "locking", "rate-limit", "unique-id"] }
 
 [dependencies.tungstenite]
 # Uncomment when `tungstenite-rs` is released.
