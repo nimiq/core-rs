@@ -11,7 +11,6 @@ categories = ["cryptography::cryptocurrencies"]
 keywords = ["nimiq", "cryptocurrency", "blockchain", "serialization"]
 
 [badges]
-gitlab = { repository = "nimiq/core-rs", branch = "master" }
 travis-ci = { repository = "nimiq/core-rs", branch = "master" }
 is-it-maintained-issue-resolution = { repository = "nimiq/core-rs" }
 is-it-maintained-open-issues = { repository = "nimiq/core-rs" }

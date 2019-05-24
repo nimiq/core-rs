@@ -10,6 +10,9 @@ license = "Apache-2.0"
 
 [badges]
 travis-ci = { repository = "nimiq/core-rs", branch = "master" }
+is-it-maintained-issue-resolution = { repository = "nimiq/core-rs" }
+is-it-maintained-open-issues = { repository = "nimiq/core-rs" }
+maintenance = { status = "experimental" }
 
 [dependencies]
 bitflags = "1.0"
