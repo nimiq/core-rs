@@ -6,6 +6,7 @@ extern crate lazy_static;
 #[cfg(feature = "nimiq-macros")]
 #[macro_use]
 extern crate nimiq_macros;
+#[cfg(feature = "account")]
 #[macro_use]
 extern crate enum_display_derive;
 

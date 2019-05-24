@@ -33,6 +33,7 @@ fixed-unsigned = { path = "../fixed-unsigned", version = "0.1", optional = true 
 lazy_static = "1.2"
 
 [features]
+default = ["all"]
 all = ["coin", "account", "policy", "networks"]
 coin = ["hex", "failure"]
 account = ["hex", "nimiq-macros", "failure", "enum-display-derive"]
