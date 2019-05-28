@@ -11,7 +11,7 @@ use account::{Account, Inherent, InherentType};
 use account::inherent::AccountInherentInteraction;
 use accounts::Accounts;
 use beserial::Serialize;
-use block::{Block, BlockError, BlockType, MacroBlock, MacroHeader, MicroBlock, ForkProof, ViewChange, ViewChanges, ViewChangeProof};
+use block::{Block, BlockError, BlockType, MacroBlock, MacroHeader, MicroBlock, ForkProof, ViewChanges, ViewChangeProof};
 use blockchain_base::{AbstractBlockchain, BlockchainError, Direction};
 #[cfg(feature = "metrics")]
 use blockchain_base::chain_metrics::BlockchainMetrics;
