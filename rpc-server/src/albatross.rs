@@ -13,24 +13,29 @@ use consensus::{Consensus, AlbatrossConsensusProtocol};
 use hash::{Blake2bHash, Hash};
 use primitives::policy;
 use primitives::validators::Slots;
+use lib::block_producer::albatross::AlbatrossBlockProducer;
+use lib::block_producer::BlockProducer;
 
 use crate::error::AuthenticationError;
-use crate::jsonrpc;
+use crate::{jsonrpc, rpc_not_implemented};
 use crate::{AbstractRpcHandler, JsonRpcConfig, JsonRpcServerState};
 use crate::common::{RpcHandler, TransactionContext};
 
-impl AbstractRpcHandler<AlbatrossConsensusProtocol> for RpcHandler<AlbatrossConsensusProtocol> {
-    fn new(consensus: Arc<Consensus<AlbatrossConsensusProtocol>>, state: Arc<RwLock<JsonRpcServerState>>, config: Arc<JsonRpcConfig>) -> Self {
+impl AbstractRpcHandler<AlbatrossConsensusProtocol, AlbatrossBlockProducer> for RpcHandler<AlbatrossConsensusProtocol, AlbatrossBlockProducer>
+{
+    fn new(consensus: Arc<Consensus<AlbatrossConsensusProtocol>>, block_producer: Arc<AlbatrossBlockProducer>, state: Arc<RwLock<JsonRpcServerState>>, config: Arc<JsonRpcConfig>) -> Self {
+        let starting_block = consensus.blockchain.height();
         Self {
             state,
-            consensus: consensus.clone(),
-            starting_block: consensus.blockchain.height(),
+            consensus,
+            block_producer,
+            starting_block,
             config
         }
     }
 }
 
-impl jsonrpc::Handler for RpcHandler<AlbatrossConsensusProtocol> {
+impl jsonrpc::Handler for RpcHandler<AlbatrossConsensusProtocol, AlbatrossBlockProducer> {
     fn get_method(&self, name: &str) -> Option<fn(&Self, Array) -> Result<JsonValue, JsonValue>> {
         trace!("RPC method called: {}", name);
 
@@ -52,20 +57,24 @@ impl jsonrpc::Handler for RpcHandler<AlbatrossConsensusProtocol> {
             "sendRawTransaction" => Some(RpcHandler::send_raw_transaction),
             "createRawTransaction" => Some(RpcHandler::create_raw_transaction),
             "sendTransaction" => Some(RpcHandler::send_transaction),
-            "getTransactionByBlockHashAndIndex" => Some(RpcHandler::<AlbatrossConsensusProtocol>::get_transaction_by_block_hash_and_index),
-            "getTransactionByBlockNumberAndIndex" => Some(RpcHandler::<AlbatrossConsensusProtocol>::get_transaction_by_block_number_and_index),
+            "getTransactionByBlockHashAndIndex" => Some(RpcHandler::<AlbatrossConsensusProtocol, AlbatrossBlockProducer>::get_transaction_by_block_hash_and_index),
+            "getTransactionByBlockNumberAndIndex" => Some(RpcHandler::<AlbatrossConsensusProtocol, AlbatrossBlockProducer>::get_transaction_by_block_number_and_index),
             "mempoolContent" => Some(RpcHandler::mempool_content),
             "mempool" => Some(RpcHandler::mempool),
 
             // Blockchain
             "blockNumber" => Some(RpcHandler::block_number),
             "epochNumber" => Some(RpcHandler::epoch_number),
-            "getBlockTransactionCountByHash" => Some(RpcHandler::<AlbatrossConsensusProtocol>::get_block_transaction_count_by_hash),
-            "getBlockTransactionCountByNumber" => Some(RpcHandler::<AlbatrossConsensusProtocol>::get_block_transaction_count_by_number),
-            "getBlockByHash" => Some(RpcHandler::<AlbatrossConsensusProtocol>::get_block_by_hash),
-            "getBlockByNumber" => Some(RpcHandler::<AlbatrossConsensusProtocol>::get_block_by_number),
-            "currentSlots" => Some(RpcHandler::<AlbatrossConsensusProtocol>::current_slots),
-            "lastSlots" => Some(RpcHandler::<AlbatrossConsensusProtocol>::last_slots),
+            "getBlockTransactionCountByHash" => Some(RpcHandler::<AlbatrossConsensusProtocol, AlbatrossBlockProducer>::get_block_transaction_count_by_hash),
+            "getBlockTransactionCountByNumber" => Some(RpcHandler::<AlbatrossConsensusProtocol, AlbatrossBlockProducer>::get_block_transaction_count_by_number),
+            "getBlockByHash" => Some(RpcHandler::<AlbatrossConsensusProtocol, AlbatrossBlockProducer>::get_block_by_hash),
+            "getBlockByNumber" => Some(RpcHandler::<AlbatrossConsensusProtocol, AlbatrossBlockProducer>::get_block_by_number),
+            "currentSlots" => Some(RpcHandler::<AlbatrossConsensusProtocol, AlbatrossBlockProducer>::current_slots),
+            "lastSlots" => Some(RpcHandler::<AlbatrossConsensusProtocol, AlbatrossBlockProducer>::last_slots),
+
+            // Validator
+            "getPbftProposal" => Some(RpcHandler::<AlbatrossConsensusProtocol, AlbatrossBlockProducer>::get_pbft_proposal),
+            "getPbftVotes" => Some(RpcHandler::<AlbatrossConsensusProtocol, AlbatrossBlockProducer>::get_pbft_votes),
 
             _ => None
         }
@@ -79,7 +88,7 @@ impl jsonrpc::Handler for RpcHandler<AlbatrossConsensusProtocol> {
     }
 }
 
-impl RpcHandler<AlbatrossConsensusProtocol> {
+impl RpcHandler<AlbatrossConsensusProtocol, AlbatrossBlockProducer> {
 
     // Blockchain
 
@@ -145,6 +154,23 @@ impl RpcHandler<AlbatrossConsensusProtocol> {
         } else {
             Err(object!("message" => "Macro blocks don't contain transactions"))
         }
+    }
+
+    fn get_pbft_proposal(&self, params: Array) -> Result<JsonValue, JsonValue> {
+        let proposal = self.block_producer.get_pbft_proposal();
+        rpc_not_implemented()
+    }
+
+    fn get_pbft_votes(&self, params: Array) -> Result<JsonValue, JsonValue> {
+        Ok(if let Some((proposal, commit)) = self.block_producer.get_pbft_votes() {
+            object!{
+                "proposal" => proposal,
+                "commit" => commit,
+            }
+        }
+        else {
+            object!{"message" => "Not in pBFT phase."}
+        })
     }
 
     // Helper functions

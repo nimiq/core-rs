@@ -3,7 +3,7 @@ use std::collections::btree_map::BTreeMap;
 use std::sync::{Arc, Weak};
 
 use failure::Fail;
-use parking_lot::{RwLock, RwLockUpgradableReadGuard};
+use parking_lot::{RwLock, RwLockUpgradableReadGuard, RwLockReadGuard, MappedRwLockReadGuard};
 
 use block_albatross::{
     ForkProof, PbftProof, PbftProofBuilder, PbftProposal,
@@ -438,5 +438,23 @@ impl ValidatorNetwork {
     /// Broadcast our own validator info
     pub fn broadcast_info(&self, info: SignedValidatorInfo) {
         self.broadcast_all(Message::ValidatorInfo(vec![info]));
+    }
+
+    pub fn get_pbft_proposal(&self) -> Option<PbftProposal> {
+        if let Some((ref proposal, _, _)) = self.state.read().pbft_proof {
+            Some(proposal.clone())
+        }
+        else {
+            None
+        }
+    }
+
+    pub fn get_pbft_votes(&self) -> Option<(usize, usize)> {
+        if let Some((_, _, proof)) = self.state.read().pbft_proof.as_ref() {
+            Some((proof.prepare.num_slots as usize, proof.commit.num_slots as usize))
+        }
+        else {
+            None
+        }
     }
 }

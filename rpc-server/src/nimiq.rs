@@ -16,24 +16,27 @@ use keys::Address;
 use transaction::{Transaction, TransactionReceipt};
 use utils::merkle::MerklePath;
 use utils::time::systemtime_to_timestamp;
+use lib::block_producer::DummyBlockProducer;
 
 use crate::error::AuthenticationError;
 use crate::{jsonrpc, rpc_not_implemented};
 use crate::{AbstractRpcHandler, JsonRpcConfig, JsonRpcServerState};
 use crate::common::{RpcHandler, TransactionContext};
 
-impl AbstractRpcHandler<NimiqConsensusProtocol> for RpcHandler<NimiqConsensusProtocol> {
-    fn new(consensus: Arc<Consensus<NimiqConsensusProtocol>>, state: Arc<RwLock<JsonRpcServerState>>, config: Arc<JsonRpcConfig>) -> Self {
+impl AbstractRpcHandler<NimiqConsensusProtocol, DummyBlockProducer> for RpcHandler<NimiqConsensusProtocol, DummyBlockProducer> {
+    fn new(consensus: Arc<Consensus<NimiqConsensusProtocol>>, block_producer: Arc<DummyBlockProducer>, state: Arc<RwLock<JsonRpcServerState>>, config: Arc<JsonRpcConfig>) -> Self {
+        let starting_block = consensus.blockchain.height();
         Self {
             state,
-            consensus: consensus.clone(),
-            starting_block: consensus.blockchain.height(),
+            consensus,
+            block_producer,
+            starting_block,
             config
         }
     }
 }
 
-impl jsonrpc::Handler for RpcHandler<NimiqConsensusProtocol> {
+impl jsonrpc::Handler for RpcHandler<NimiqConsensusProtocol, DummyBlockProducer> {
     fn get_method(&self, name: &str) -> Option<fn(&Self, Array) -> Result<JsonValue, JsonValue>> {
         trace!("RPC method called: {}", name);
 
@@ -55,26 +58,26 @@ impl jsonrpc::Handler for RpcHandler<NimiqConsensusProtocol> {
             "sendRawTransaction" => Some(RpcHandler::send_raw_transaction),
             "createRawTransaction" => Some(RpcHandler::create_raw_transaction),
             "sendTransaction" => Some(RpcHandler::send_transaction),
-            "getRawTransactionInfo" => Some(RpcHandler::<NimiqConsensusProtocol>::get_raw_transaction_info),
-            "getTransactionByBlockHashAndIndex" => Some(RpcHandler::<NimiqConsensusProtocol>::get_transaction_by_block_hash_and_index),
-            "getTransactionByBlockNumberAndIndex" => Some(RpcHandler::<NimiqConsensusProtocol>::get_transaction_by_block_number_and_index),
-            "getTransactionByHash" => Some(RpcHandler::<NimiqConsensusProtocol>::get_transaction_by_hash),
-            "getTransactionReceipt" => Some(RpcHandler::<NimiqConsensusProtocol>::get_transaction_receipt),
-            "getTransactionsByAddress" => Some(RpcHandler::<NimiqConsensusProtocol>::get_transactions_by_address),
+            "getRawTransactionInfo" => Some(RpcHandler::<NimiqConsensusProtocol, DummyBlockProducer>::get_raw_transaction_info),
+            "getTransactionByBlockHashAndIndex" => Some(RpcHandler::<NimiqConsensusProtocol, DummyBlockProducer>::get_transaction_by_block_hash_and_index),
+            "getTransactionByBlockNumberAndIndex" => Some(RpcHandler::<NimiqConsensusProtocol, DummyBlockProducer>::get_transaction_by_block_number_and_index),
+            "getTransactionByHash" => Some(RpcHandler::<NimiqConsensusProtocol, DummyBlockProducer>::get_transaction_by_hash),
+            "getTransactionReceipt" => Some(RpcHandler::<NimiqConsensusProtocol, DummyBlockProducer>::get_transaction_receipt),
+            "getTransactionsByAddress" => Some(RpcHandler::<NimiqConsensusProtocol, DummyBlockProducer>::get_transactions_by_address),
             "mempoolContent" => Some(RpcHandler::mempool_content),
             "mempool" => Some(RpcHandler::mempool),
 
             // Blockchain
             "blockNumber" => Some(RpcHandler::block_number),
-            "getBlockTransactionCountByHash" => Some(RpcHandler::<NimiqConsensusProtocol>::get_block_transaction_count_by_hash),
-            "getBlockTransactionCountByNumber" => Some(RpcHandler::<NimiqConsensusProtocol>::get_block_transaction_count_by_number),
-            "getBlockByHash" => Some(RpcHandler::<NimiqConsensusProtocol>::get_block_by_hash),
-            "getBlockByNumber" => Some(RpcHandler::<NimiqConsensusProtocol>::get_block_by_number),
+            "getBlockTransactionCountByHash" => Some(RpcHandler::<NimiqConsensusProtocol, DummyBlockProducer>::get_block_transaction_count_by_hash),
+            "getBlockTransactionCountByNumber" => Some(RpcHandler::<NimiqConsensusProtocol, DummyBlockProducer>::get_block_transaction_count_by_number),
+            "getBlockByHash" => Some(RpcHandler::<NimiqConsensusProtocol, DummyBlockProducer>::get_block_by_hash),
+            "getBlockByNumber" => Some(RpcHandler::<NimiqConsensusProtocol, DummyBlockProducer>::get_block_by_number),
 
             // Block production
-            "getWork" => Some(RpcHandler::<NimiqConsensusProtocol>::get_work),
-            "getBlockTemplate" => Some(RpcHandler::<NimiqConsensusProtocol>::get_block_template),
-            "submitBlock" => Some(RpcHandler::<NimiqConsensusProtocol>::submit_block),
+            "getWork" => Some(RpcHandler::<NimiqConsensusProtocol, DummyBlockProducer>::get_work),
+            "getBlockTemplate" => Some(RpcHandler::<NimiqConsensusProtocol, DummyBlockProducer>::get_block_template),
+            "submitBlock" => Some(RpcHandler::<NimiqConsensusProtocol, DummyBlockProducer>::submit_block),
 
             _ => None
         }
@@ -88,7 +91,7 @@ impl jsonrpc::Handler for RpcHandler<NimiqConsensusProtocol> {
     }
 }
 
-impl RpcHandler<NimiqConsensusProtocol> {
+impl RpcHandler<NimiqConsensusProtocol, DummyBlockProducer> {
 
     // Transaction
 

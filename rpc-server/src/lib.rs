@@ -20,6 +20,7 @@ extern crate nimiq_network_primitives as network_primitives;
 extern crate nimiq_primitives as primitives;
 extern crate nimiq_transaction as transaction;
 extern crate nimiq_utils as utils;
+extern crate nimiq_lib as lib;
 
 use std::collections::HashSet;
 use std::net::{IpAddr, SocketAddr};
@@ -31,6 +32,7 @@ use json::JsonValue;
 use parking_lot::RwLock;
 
 use consensus::{Consensus, ConsensusEvent, ConsensusProtocol, AlbatrossConsensusProtocol};
+use lib::block_producer::BlockProducer;
 
 use crate::error::Error;
 
@@ -75,9 +77,10 @@ pub struct JsonRpcServerState {
     consensus_state: &'static str,
 }
 
-pub fn rpc_server<P, PH>(consensus: Arc<Consensus<P>>, ip: IpAddr, port: u16, config: JsonRpcConfig) -> Result<Box<dyn Future<Item=(), Error=()> + Send + Sync>, Error>
+pub fn rpc_server<P, PH, BP>(consensus: Arc<Consensus<P>>, block_producer: Arc<BP>, ip: IpAddr, port: u16, config: JsonRpcConfig) -> Result<Box<dyn Future<Item=(), Error=()> + Send + Sync>, Error>
     where P: ConsensusProtocol + 'static,
-    PH: AbstractRpcHandler<P> + 'static,
+    PH: AbstractRpcHandler<P, BP> + 'static,
+    BP: BlockProducer<P> + 'static,
 {
     let state = Arc::new(RwLock::new(JsonRpcServerState {
         consensus_state: "syncing",
@@ -103,19 +106,24 @@ pub fn rpc_server<P, PH>(consensus: Arc<Consensus<P>>, ip: IpAddr, port: u16, co
     let config = Arc::new(config);
     Ok(Box::new(Server::try_bind(&SocketAddr::new(ip, port))?
         .serve(move || {
-            jsonrpc::Service::new(PH::new(Arc::clone(&consensus), Arc::clone(&state), Arc::clone(&config)))
+            jsonrpc::Service::new(PH::new(Arc::clone(&consensus), Arc::clone(&block_producer), Arc::clone(&state), Arc::clone(&config)))
         })
         .map_err(|e| error!("RPC server failed: {}", e)))) // as Box<dyn Future<Item=(), Error=()> + Send + Sync>
 }
 
-pub trait AbstractRpcHandler<P: ConsensusProtocol + 'static> : jsonrpc::Handler {
-    fn new(consensus: Arc<Consensus<P>>, state: Arc<RwLock<JsonRpcServerState>>, config: Arc<JsonRpcConfig>) -> Self;
+pub trait AbstractRpcHandler<P, BP>: jsonrpc::Handler
+    where P: ConsensusProtocol + 'static,
+    BP: BlockProducer<P> + 'static
+{
+    fn new(consensus: Arc<Consensus<P>>, block_producer: Arc<BP>, state: Arc<RwLock<JsonRpcServerState>>, config: Arc<JsonRpcConfig>) -> Self;
 }
 
 pub struct DummyRpcHandler();
 
-impl AbstractRpcHandler<AlbatrossConsensusProtocol> for DummyRpcHandler {
-    fn new(_consensus: Arc<Consensus<AlbatrossConsensusProtocol>>, _state: Arc<RwLock<JsonRpcServerState>>, _config: Arc<JsonRpcConfig>) -> Self {
+impl<BP> AbstractRpcHandler<AlbatrossConsensusProtocol, BP> for DummyRpcHandler
+    where BP: BlockProducer<AlbatrossConsensusProtocol> + 'static
+{
+    fn new(_consensus: Arc<Consensus<AlbatrossConsensusProtocol>>, _block_producer: Arc<BP>, _state: Arc<RwLock<JsonRpcServerState>>, _config: Arc<JsonRpcConfig>) -> Self {
         Self()
     }
 }

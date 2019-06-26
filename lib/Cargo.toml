@@ -31,6 +31,7 @@ nimiq-mempool = { path = "../mempool", version = "0.1.0" }
 nimiq-utils = { path = "../utils", version = "0.1.0" }
 nimiq-validator = { path = "../validator", version = "0.1.0", optional = true }
 nimiq-bls = { path = "../bls", version = "0.1.0", optional = true }
+nimiq-block-albatross = { path = "../primitives/block-albatross" }
 
 [features]
 default = ["validator", "mock-validator"]

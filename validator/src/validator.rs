@@ -1,7 +1,7 @@
 use std::sync::{Arc, Weak};
 use std::time::Duration;
 
-use parking_lot::RwLock;
+use parking_lot::{RwLock, MappedRwLockReadGuard};
 
 use account::Account;
 use block_albatross::{
@@ -467,5 +467,13 @@ impl Validator {
         } else {
             panic!("Validator registry has a wrong account type.");
         }
+    }
+
+    pub fn get_pbft_proposal(&self) -> Option<PbftProposal> {
+        self.validator_network.get_pbft_proposal()
+    }
+
+    pub fn get_pbft_votes(&self) -> Option<(usize, usize)> {
+        self.validator_network.get_pbft_votes()
     }
 }

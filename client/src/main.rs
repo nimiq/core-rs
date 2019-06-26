@@ -125,11 +125,11 @@ fn find_config_file(cmdline: &Options, files: &mut LazyFileLocations) -> Result<
     Ok(files.config()?)
 }
 
-fn run_node<CC, BP>(client_builder: ClientBuilder, settings: Settings, block_producer_config: BP::Config) -> Result<(), Error>
-    where CC: ClientConfiguration,
-          BP: BlockProducer<CC::Protocol> + 'static,
+fn run_node<CC>(client_builder: ClientBuilder, settings: Settings, block_producer_config: CC::BlockProducer::Config) -> Result<(), Error>
+    where CC: ClientConfiguration
 {
-    let client: ClientInitializeFuture<CC::Protocol, BP> = client_builder.build_client::<CC::Protocol, BP>(block_producer_config)?;
+    let client: ClientInitializeFuture<CC::Protocol, CC::BlockProducer> = client_builder
+        .build_client::<CC::Protocol, CC::BlockProducer>(block_producer_config)?;
 
     let consensus = client.consensus();
 
@@ -153,7 +153,7 @@ fn run_node<CC, BP>(client_builder: ClientBuilder, settings: Settings, block_pro
                 _ => Err(ConfigError::MissingRpcCredentials)?
             };
             if credentials.is_none() {
-                warn!("Running RPC server without authentication! Consider setting a username and password.")
+                warn!("Running RPC server without authentication! Consider setting a username and password.");
             }
             if !rpc_settings.corsdomain.is_empty() {
                 warn!("Cross-Origin access is currently not implemented!");
@@ -162,8 +162,8 @@ fn run_node<CC, BP>(client_builder: ClientBuilder, settings: Settings, block_pro
                 warn!("'allowip' for RPC server is currently not implemented!");
             }
             info!("Starting RPC server listening on port {}", port);
-            other_futures.push(rpc_server::<CC::Protocol, CC::RpcHandler>(
-                Arc::clone(&consensus), bind, port, JsonRpcConfig {
+            other_futures.push(rpc_server::<CC::Protocol, CC::RpcHandler, CC::BlockProducer>(
+                Arc::clone(&consensus), Arc::clone(unimplemented!()), bind, port, JsonRpcConfig {
                     credentials,
                     methods: HashSet::from_iter(rpc_settings.methods),
                     allowip: (), // TODO
@@ -347,11 +347,11 @@ fn run() -> Result<(), Error> {
                 info!("Ignoring validator config");
                 run_node::<AlbatrossConfiguration, DummyBlockProducer>(client_builder, settings, ())?;
             },
-            s::ValidatorType::Mock => {
+            /*s::ValidatorType::Mock => {
                 info!("Mock validator");
                 info!("Ignoring validator config");
                 run_node::<AlbatrossConfiguration, MockBlockProducer>(client_builder, settings, ())?;
-            },
+            },*/
             s::ValidatorType::Validator => {
                 let validator_key = {
                     // Load validator key from key store, or create a new one, if key store doesn't exist
@@ -380,6 +380,7 @@ fn run() -> Result<(), Error> {
                 };
                 run_node::<AlbatrossConfiguration, AlbatrossBlockProducer>(client_builder, settings, validator_config)?;
             },
+            _ => unimplemented!(),
         };
     }
     else {
@@ -391,20 +392,23 @@ fn run() -> Result<(), Error> {
 
 trait ClientConfiguration {
     type Protocol: ConsensusProtocol + 'static;
+    type BlockProducer: BlockProducer<Self::Protocol> + 'static;
     type ChainMetrics: AbstractChainMetrics<Self::Protocol> + metrics_server::server::Metrics + 'static;
-    type RpcHandler: AbstractRpcHandler<Self::Protocol> + 'static;
+    type RpcHandler: AbstractRpcHandler<Self::Protocol, Self::BlockProducer> + 'static;
 }
 
 struct NimiqConfiguration();
 impl ClientConfiguration for NimiqConfiguration {
     type Protocol = NimiqConsensusProtocol;
+    type BlockProducer = DummyBlockProducer;
     type ChainMetrics = NimiqChainMetrics;
-    type RpcHandler = RpcHandler<Self::Protocol>;
+    type RpcHandler = RpcHandler<Self::Protocol, Self::BlockProducer>;
 }
 
 struct AlbatrossConfiguration();
 impl ClientConfiguration for AlbatrossConfiguration {
     type Protocol = AlbatrossConsensusProtocol;
+    type BlockProducer = AlbatrossBlockProducer;
     type ChainMetrics = AlbatrossChainMetrics;
-    type RpcHandler = RpcHandler<Self::Protocol>;
+    type RpcHandler = RpcHandler<Self::Protocol, Self::BlockProducer>;
 }

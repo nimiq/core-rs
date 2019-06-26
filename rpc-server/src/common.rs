@@ -19,18 +19,26 @@ use network::connection::connection_pool::ConnectionId;
 use network::peer_scorer::Score;
 use network_primitives::address::{PeerId, PeerUri};
 use transaction::Transaction;
+use lib::block_producer::BlockProducer;
 
 use crate::rpc_not_implemented;
 use crate::{JsonRpcConfig, JsonRpcServerState};
 
-pub struct RpcHandler<P: ConsensusProtocol + 'static> {
+pub struct RpcHandler<P, BP>
+    where P: ConsensusProtocol + 'static,
+          BP: BlockProducer<P> + 'static
+{
     pub state: Arc<RwLock<JsonRpcServerState>>,
     pub consensus: Arc<Consensus<P>>,
+    pub block_producer: Arc<BP>,
     pub starting_block: u32,
     pub config: Arc<JsonRpcConfig>,
 }
 
-impl<P: ConsensusProtocol + 'static> RpcHandler<P> {
+impl<P, BP> RpcHandler<P, BP>
+    where P: ConsensusProtocol + 'static,
+          BP: BlockProducer<P> + 'static
+{
 
     // Network
 
