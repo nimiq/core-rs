@@ -588,6 +588,7 @@ impl JsonRpcHandler {
             state.get_connection_by_peer_address(&peer_address_info.peer_address)
         });
         let peer = connection_info.and_then(|conn| conn.peer());
+        let network_connection = connection_info.and_then(|conn| conn.network_connection());
 
         object!{
             "id" => peer_address_info.peer_address.peer_id().to_hex(),
@@ -600,8 +601,8 @@ impl JsonRpcHandler {
             "headHash" => peer.map(|peer| peer.head_hash.to_hex().into()).unwrap_or(Null),
             "score" => score.map(|s| s.into()).unwrap_or(Null),
             "latency" => connection_info.map(|conn| conn.statistics().latency_median().into()).unwrap_or(Null),
-            "rx" => Null, // TODO: Not in NetworkConnection
-            "tx" => Null,
+            "rx" => network_connection.map(|conn| conn.metrics().bytes_received().into()).unwrap_or(Null),
+            "tx" => network_connection.map(|conn| conn.metrics().bytes_sent().into()).unwrap_or(Null)
         }
     }
 
