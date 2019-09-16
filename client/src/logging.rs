@@ -33,7 +33,7 @@ const NIMIQ_MODULES: [&str; 22] = [
     "nimiq_rpc_server",
     "nimiq_utils",
 ];
-pub const DEFAULT_LEVEL: LevelFilter = LevelFilter::Warn;
+pub const DEFAULT_LEVEL: LevelFilter = LevelFilter::Info;
 
 /// Retrieve and set max module width.
 fn max_module_width(target: &str) -> usize {
