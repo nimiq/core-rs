@@ -62,7 +62,7 @@ impl ConsensusAgent {
     }
 
     pub(super) fn on_get_transactions_proof(&self, msg: GetTransactionsProofMessage) {
-        trace!("[GET-TRANSACTIONS-PROOF] from {}", self.peer.peer_address());
+        trace!("[GET-TRANSACTIONS-PROOF] from {}, for block_hash: {} and for addresses: {:?}", self.peer.peer_address(), msg.block_hash, msg.addresses);
         if !self.state.write().transactions_proof_limit.note_single() {
             warn!("Rejecting GetTransactionsProofMessage message - rate-limit exceeded");
             self.peer.channel.send_or_close(TransactionsProofMessage::new(msg.block_hash, None));
@@ -71,6 +71,7 @@ impl ConsensusAgent {
 
         let addresses = HashSet::from_iter(msg.addresses);
         let proof = self.blockchain.get_transactions_proof(&msg.block_hash, &addresses);
+        trace!("This is the proof we're sending back to the peer: {:#?}", proof);
         self.peer.channel.send_or_close(TransactionsProofMessage::new(msg.block_hash, proof));
     }
 
