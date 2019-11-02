@@ -620,7 +620,7 @@ impl ConnectionPool {
             info.set_peer_channel(peer_channel.clone());
 
             // Create NetworkAgent.
-            agent = NetworkAgent::new(self.blockchain.clone(), self.addresses.clone(), self.network_config.clone(), peer_channel);
+            agent = NetworkAgent::new(Arc::clone(&self.blockchain), self.addresses.clone(), self.network_config.clone(), peer_channel);
             let mut locked_agent = agent.write();
             let weak = self.self_weak.clone();
             locked_agent.notifier.register(move |event: &NetworkAgentEvent| {

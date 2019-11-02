@@ -117,10 +117,6 @@ impl PartialEq for ConnectionInfo {
 
 impl Eq for ConnectionInfo {}
 
-pub struct ConnectionStatistics {
-    latencies: Vec<f64>,
-}
-
 impl fmt::Display for ConnectionInfo {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         write!(f, "{{ peer_address: {}, state: {:?} }}", match self.peer_address {
@@ -128,6 +124,10 @@ impl fmt::Display for ConnectionInfo {
             None => "None".to_string(),
         }, self.state)
     }
+}
+
+pub struct ConnectionStatistics {
+    latencies: Vec<f64>,
 }
 
 impl ConnectionStatistics {
