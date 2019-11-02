@@ -695,65 +695,70 @@ impl ConnectionPool {
         // Read lock.
         {
             let mut state = self.state.write();
-            let info = state.connections.get(connection_id).unwrap_or_else(|| panic!("Missing connection #{}", connection_id));
-            let network_connection = info.network_connection().unwrap();
+            if let Some(info) = state.connections.get(connection_id) {
+                let network_connection = info.network_connection().unwrap();
 
-            if network_connection.inbound() {
-                // Re-check allowInboundExchange as it might have changed.
-                if state.peer_count() >= network_primitives::PEER_COUNT_MAX && !state.allow_inbound_exchange {
-                    ConnectionPool::close(info.network_connection(), CloseType::MaxPeerCountReached);
-                    return;
-                }
+                if network_connection.inbound() {
+                    // Re-check allowInboundExchange as it might have changed.
+                    if state.peer_count() >= network_primitives::PEER_COUNT_MAX && !state.allow_inbound_exchange {
+                        Self::close(info.network_connection(), CloseType::MaxPeerCountReached);
+                        return;
+                    }
 
-                // Duplicate/simultaneous connection check (post handshake):
-                let stored_connection_id = state.connections_by_peer_address.get(&peer_address);
-                if let Some(&stored_connection_id) = stored_connection_id {
-                    if stored_connection_id != connection_id {
-                        let stored_connection = state.connections.get(stored_connection_id).unwrap_or_else(|| panic!("Missing connection #{}", stored_connection_id));
-                        match stored_connection.state() {
-                            ConnectionState::Connecting => {
-                                // Abort the stored connection attempt and accept this connection.
-                                let protocol = peer_address.protocol();
-                                assert!(protocol == Protocol::Wss || protocol == Protocol::Ws, "Duplicate connection to non-WS node");
-                                debug!("Aborting connection attempt to {}, simultaneous connection succeeded", peer_address);
+                    // Duplicate/simultaneous connection check (post handshake):
+                    let stored_connection_id = state.connections_by_peer_address.get(&peer_address);
+                    if let Some(&stored_connection_id) = stored_connection_id {
+                        if stored_connection_id != connection_id {
+                            let stored_connection = state.connections.get(stored_connection_id).unwrap_or_else(|| panic!("Missing connection #{}", stored_connection_id));
+                            match stored_connection.state() {
+                                ConnectionState::Connecting => {
+                                    // Abort the stored connection attempt and accept this connection.
+                                    let protocol = peer_address.protocol();
+                                    assert!(protocol == Protocol::Wss || protocol == Protocol::Ws, "Duplicate connection to non-WS node");
+                                    debug!("Aborting connection attempt to {}, simultaneous connection succeeded", peer_address);
 
-                                // Abort connection.
-                                if let Some(handle) = stored_connection.connection_handle() {
-                                    handle.abort(CloseType::SimultaneousConnection);
-                                }
+                                    // Abort connection.
+                                    if let Some(handle) = stored_connection.connection_handle() {
+                                        handle.abort(CloseType::SimultaneousConnection);
+                                    }
 
-                                // Clean up the state from the changes made by connect_outbound()
-                                state.connections.remove(stored_connection_id);
-                                state.remove_peer_address(stored_connection_id, &peer_address);
-                            },
-                            ConnectionState::Established => {
-                                // If we have another established connection to this peer, close this connection.
-                                ConnectionPool::close(info.network_connection(), CloseType::SimultaneousConnection);
-                                return;
-                            },
-                            ConnectionState::Negotiating => {
-                                // The peer with the lower peerId accepts this connection and closes his stored connection.
-                                if self.network_config.peer_id() < peer_address.peer_id() {
-                                    ConnectionPool::close(stored_connection.network_connection(), CloseType::SimultaneousConnection);
+                                    // Clean up the state from the changes made by connect_outbound()
+                                    state.connections.remove(stored_connection_id);
+                                    state.remove_peer_address(stored_connection_id, &peer_address);
+                                },
+                                ConnectionState::Established => {
+                                    // If we have another established connection to this peer, close this connection.
+                                    Self::close(info.network_connection(), CloseType::SimultaneousConnection);
+                                    return;
+                                },
+                                ConnectionState::Negotiating => {
+                                    // The peer with the lower peerId accepts this connection and closes his stored connection.
+                                    if self.network_config.peer_id() < peer_address.peer_id() {
+                                        Self::close(stored_connection.network_connection(), CloseType::SimultaneousConnection);
+                                        // Free association with peer address.
+                                        state.remove_peer_address(stored_connection_id, &peer_address);
+                                    } else {
+                                        // The peer with the higher peerId closes this connection and keeps his stored connection.
+                                        Self::close(info.network_connection(), CloseType::SimultaneousConnection);
+                                        return;
+                                    }
+                                },
+                                _ => {
+                                    // Accept this connection and close the stored connection.
+                                    Self::close(stored_connection.network_connection(), CloseType::SimultaneousConnection);
                                     // Free association with peer address.
                                     state.remove_peer_address(stored_connection_id, &peer_address);
-                                } else {
-                                    // The peer with the higher peerId closes this connection and keeps his stored connection.
-                                    ConnectionPool::close(info.network_connection(), CloseType::SimultaneousConnection);
-                                    return;
-                                }
-                            },
-                            _ => {
-                                // Accept this connection and close the stored connection.
-                                ConnectionPool::close(stored_connection.network_connection(), CloseType::SimultaneousConnection);
-                                // Free association with peer address.
-                                state.remove_peer_address(stored_connection_id, &peer_address);
-                            },
+                                },
+                            }
                         }
                     }
-                }
 
-                is_inbound = true;
+                    is_inbound = true;
+                }
+            }
+            else {
+                warn!("Missing connection #{}", connection_id);
+                return;
             }
         }
 
@@ -889,9 +894,6 @@ impl ConnectionPool {
             self.notifier.read().notify(ConnectionPoolEvent::PeersChanged);
         }
 
-        // Let listeners know about this closing.
-        self.notifier.read().notify(ConnectionPoolEvent::Close(connection_id, UniquePtr::new(&info), ty));
-
         // Set the peer connection to closed state.
         info.close();
     }
@@ -1017,7 +1019,6 @@ pub enum ConnectionPoolEvent {
     PeerLeft(Peer),
     PeersChanged,
     ConnectError(Arc<PeerAddress>, CloseType),
-    Close(ConnectionId, UniquePtr<ConnectionInfo>, CloseType),
     Connection(ConnectionId),
     RecyclingRequest,
 }
