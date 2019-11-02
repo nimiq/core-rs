@@ -73,7 +73,7 @@ impl PeerScorer {
         }
         candidates.sort_by(|a, b| { a.1.cmp(&b.1) });
         let mut randrng: OsRng = OsRng::new().unwrap();
-        let rand_ind = randrng.gen_range(0, usize::min(PeerScorer::PICK_SELECTION_SIZE, candidates.len()));
+        let rand_ind = randrng.gen_range(0, usize::min(Self::PICK_SELECTION_SIZE, candidates.len()));
         match candidates.get(rand_ind) {
             Some((peer_address, _)) => Some(Arc::clone(peer_address)),
             None => None

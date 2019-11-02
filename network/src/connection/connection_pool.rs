@@ -503,7 +503,7 @@ impl ConnectionPool {
         // Close connection if we currently do not allow inbound connections.
         // TODO WebRTC connections are exempt.
         if conn.inbound() && !state.allow_inbound_connections {
-            ConnectionPool::close(info.network_connection(), CloseType::InboundConnectionsBlocked);
+            Self::close(info.network_connection(), CloseType::InboundConnectionsBlocked);
             return false;
         }
 
@@ -511,19 +511,19 @@ impl ConnectionPool {
         if net_address.is_reliable() {
             // Close connection if peer's IP is banned.
             if state.is_ip_banned(&net_address) {
-                ConnectionPool::close(info.network_connection(), CloseType::BannedIp);
+                Self::close(info.network_connection(), CloseType::BannedIp);
                 return false;
             }
 
             // Close connection if we have too many connections to the peer's IP address.
             if state.get_num_connections_by_net_address(&net_address) > network_primitives::PEER_COUNT_PER_IP_MAX {
-                ConnectionPool::close(info.network_connection(), CloseType::ConnectionLimitPerIp);
+                Self::close(info.network_connection(), CloseType::ConnectionLimitPerIp);
                 return false;
             }
 
             // Close connection if we have too many connections to the peer's subnet.
             if state.get_num_connections_by_subnet(&net_address) > network_primitives::INBOUND_PEER_COUNT_PER_SUBNET_MAX {
-                ConnectionPool::close(info.network_connection(), CloseType::ConnectionLimitPerIp);
+                Self::close(info.network_connection(), CloseType::ConnectionLimitPerIp);
                 return false;
             }
         }
@@ -535,7 +535,7 @@ impl ConnectionPool {
             && !conn.outbound()
             && !(conn.inbound() && state.allow_inbound_exchange) {
 
-            ConnectionPool::close(info.network_connection(), CloseType::MaxPeerCountReached);
+            Self::close(info.network_connection(), CloseType::MaxPeerCountReached);
             return false;
         }
         true
@@ -555,14 +555,14 @@ impl ConnectionPool {
                 let connection_id_opt = state.connections_by_peer_address.get(&peer_address);
 
                 if connection_id_opt.is_none() {
-                    ConnectionPool::close(Some(&connection), CloseType::InvalidConnectionState);
+                    Self::close(Some(&connection), CloseType::InvalidConnectionState);
                     error!("No ConnectionInfo present for outgoing connection ({})", peer_address);
                     return;
                 }
 
                 connection_id = *connection_id_opt.unwrap();
                 if state.connections.get(connection_id).unwrap().state() != ConnectionState::Connecting {
-                    ConnectionPool::close(Some(&connection), CloseType::InvalidConnectionState);
+                    Self::close(Some(&connection), CloseType::InvalidConnectionState);
                     error!("Expected state to be connecting ({})", peer_address);
                     return;
                 }
@@ -583,7 +583,7 @@ impl ConnectionPool {
             // There is a chance that there was a race condition in the websocket connector
             // and that the connection should actually have been aborted.
             if info.connection_handle().map(|handle| handle.is_aborted()).unwrap_or(false) {
-                ConnectionPool::close(info.network_connection(), CloseType::SimultaneousConnection);
+                Self::close(info.network_connection(), CloseType::SimultaneousConnection);
                 debug!("Connection should have been aborted in connecting state, closing it now");
                 return;
             }
@@ -595,7 +595,7 @@ impl ConnectionPool {
                 arc.on_close(connection_id, ty.clone());
             });
 
-            if !ConnectionPool::check_connection(&state, connection_id) {
+            if !Self::check_connection(&state, connection_id) {
                 return;
             }
 
@@ -658,7 +658,7 @@ impl ConnectionPool {
             // Close connection if peer's address is banned.
             let peer_address = peer.peer_address();
             if self.addresses.is_banned(&peer_address) {
-                ConnectionPool::close(info.network_connection(), CloseType::PeerIsBanned);
+                Self::close(info.network_connection(), CloseType::PeerIsBanned);
                 return;
             }
 
@@ -669,7 +669,7 @@ impl ConnectionPool {
                     // If we already have an established connection to this peer, close this connection.
                     let stored_connection = state.connections.get(*stored_connection_id).unwrap_or_else(|| panic!("Missing connection #{}", *stored_connection_id));
                     if stored_connection.state() == ConnectionState::Established {
-                        ConnectionPool::close(info.network_connection(), CloseType::DuplicateConnection);
+                        Self::close(info.network_connection(), CloseType::DuplicateConnection);
                         return;
                     }
                 }
@@ -677,7 +677,7 @@ impl ConnectionPool {
 
             // Close connection if we have too many dumb connections.
             if peer_address.protocol() == Protocol::Dumb && state.peer_count_dumb >= network_primitives::PEER_COUNT_DUMB_MAX {
-                ConnectionPool::close(info.network_connection(), CloseType::ConnectionLimitDumb);
+                Self::close(info.network_connection(), CloseType::ConnectionLimitDumb);
                 return;
             }
         }

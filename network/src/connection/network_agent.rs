@@ -523,7 +523,7 @@ impl NetworkAgent {
 
         // Expect the peer to answer with a pong message if we haven't heard anything from it
         // within the last CONNECTIVITY_CHECK_INTERVAL. Drop the peer otherwise.
-        if self.channel.last_message_received.load(Ordering::Relaxed).elapsed() > NetworkAgent::CONNECTIVITY_CHECK_INTERVAL  {
+        if self.channel.last_message_received.load(Ordering::Relaxed).elapsed() > Self::CONNECTIVITY_CHECK_INTERVAL {
             let weak = self.self_weak.clone();
             self.timers.set_delay(NetworkAgentTimer::Ping(nonce), move || {
                 let arc = upgrade_weak!(weak);
