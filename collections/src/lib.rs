@@ -1,7 +1,6 @@
 // Required for LinkedList.
 #![feature(box_into_raw_non_null)]
 #![feature(specialization)]
-#![feature(map_get_key_value)]
 
 pub mod linked_list;
 pub mod unique_linked_list;

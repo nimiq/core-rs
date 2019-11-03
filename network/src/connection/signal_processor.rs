@@ -11,7 +11,6 @@ use crate::address::peer_address_book::PeerAddressBook;
 use crate::network_config::NetworkConfig;
 use crate::peer_channel::PeerChannel;
 
-use super::super::Network;
 use super::close_type::CloseType;
 
 pub struct SignalProcessor {

@@ -21,7 +21,6 @@ use std::fmt::Display;
 use std::io;
 use std::io::{Read, Cursor, Seek, SeekFrom};
 
-use byteorder::{BigEndian, ByteOrder};
 use parking_lot::RwLock;
 use rand::Rng;
 use rand::rngs::OsRng;
@@ -168,7 +167,7 @@ impl Message {
         let mut c = Cursor::new(buffer);
 
         // skip 4 bytes of magic
-        c.seek(SeekFrom::Start(4));
+        c.seek(SeekFrom::Start(4))?;
 
         // skip type (uvar)
         let _ = uvar::deserialize(&mut c)?;
