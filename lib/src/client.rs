@@ -140,7 +140,7 @@ impl ClientBuilder {
                     .ok_or(ClientError::MissingPort)?);
                 let identity_file = identity_file.ok_or(ClientError::MissingIdentityFile)?;
                 let identity_password = identity_password.ok_or(ClientError::MissingIdentityFile)?;
-                NetworkConfig::new_wss_network_config(hostname, port, identity_file, identity_password)
+                NetworkConfig::new_wss_network_config(hostname, port, identity_file, identity_password, reverse_proxy_config)
             },
             Protocol::Rtc => {
                 return Err(ClientError::RtcNotImplemented)
