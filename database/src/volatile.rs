@@ -141,7 +141,7 @@ impl<'txn, 'db> VolatileCursor<'txn, 'db> {
         self.0.first()
     }
 
-    pub(in super) fn first_duplicate<V>(&mut self) -> Option<(V)> where V: FromDatabaseValue {
+    pub(in super) fn first_duplicate<V>(&mut self) -> Option<V> where V: FromDatabaseValue {
         self.0.first_duplicate()
     }
 
@@ -149,7 +149,7 @@ impl<'txn, 'db> VolatileCursor<'txn, 'db> {
         self.0.last()
     }
 
-    pub(in super) fn last_duplicate<V>(&mut self) -> Option<(V)> where V: FromDatabaseValue {
+    pub(in super) fn last_duplicate<V>(&mut self) -> Option<V> where V: FromDatabaseValue {
         self.0.last_duplicate()
     }
 

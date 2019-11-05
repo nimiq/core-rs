@@ -265,7 +265,7 @@ impl<'txn, 'db> LmdbCursor<'txn, 'db> {
         Some((FromDatabaseValue::copy_from_database(key).unwrap(), FromDatabaseValue::copy_from_database(value).unwrap()))
     }
 
-    pub(in super) fn first_duplicate<V>(&mut self) -> Option<(V)> where V: FromDatabaseValue {
+    pub(in super) fn first_duplicate<V>(&mut self) -> Option<V> where V: FromDatabaseValue {
         let access = self.txn.access();
         let result: Option<&[u8]> = self.cursor.first_dup(&access).to_opt().unwrap();
         Some(FromDatabaseValue::copy_from_database(result?).unwrap())
@@ -278,7 +278,7 @@ impl<'txn, 'db> LmdbCursor<'txn, 'db> {
         Some((FromDatabaseValue::copy_from_database(key).unwrap(), FromDatabaseValue::copy_from_database(value).unwrap()))
     }
 
-    pub(in super) fn last_duplicate<V>(&mut self) -> Option<(V)> where V: FromDatabaseValue {
+    pub(in super) fn last_duplicate<V>(&mut self) -> Option<V> where V: FromDatabaseValue {
         let access = self.txn.access();
         let result: Option<&[u8]> = self.cursor.last_dup(&access).to_opt().unwrap();
         Some(FromDatabaseValue::copy_from_database(result?).unwrap())

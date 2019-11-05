@@ -262,7 +262,7 @@ impl<'txn, 'db> Cursor<'txn, 'db> {
         gen_cursor_match!(self, first)
     }
 
-    pub fn first_duplicate<V>(&mut self) -> Option<(V)> where V: FromDatabaseValue {
+    pub fn first_duplicate<V>(&mut self) -> Option<V> where V: FromDatabaseValue {
         gen_cursor_match!(self, first_duplicate)
     }
 
@@ -270,7 +270,7 @@ impl<'txn, 'db> Cursor<'txn, 'db> {
         gen_cursor_match!(self, last)
     }
 
-    pub fn last_duplicate<V>(&mut self) -> Option<(V)> where V: FromDatabaseValue {
+    pub fn last_duplicate<V>(&mut self) -> Option<V> where V: FromDatabaseValue {
         gen_cursor_match!(self, last_duplicate)
     }
 
