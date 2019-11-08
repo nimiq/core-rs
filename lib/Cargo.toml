@@ -1,6 +1,6 @@
 [package]
 name = "nimiq-lib"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["The Nimiq Core Development Team <info@nimiq.com>"]
 edition = "2018"
 description = "Nimiq's Rust library"
@@ -20,9 +20,9 @@ maintenance = { status = "experimental" }
 futures = "0.1"
 failure = "0.1"
 lazy_static = "1.2"
-nimiq-network = { path = "../network", version = "0.1" }
-nimiq-consensus = { path = "../consensus", version = "0.1" }
-nimiq-database = { path = "../database", version = "0.1" }
-nimiq-network-primitives = { path = "../network-primitives", version = "0.1", features = ["all"] }
-nimiq-primitives = { path = "../primitives", version = "0.1", features = ["networks"] }
-nimiq-mempool = { path = "../mempool", version = "0.1" }
+nimiq-network = { path = "../network", version = "0.2" }
+nimiq-consensus = { path = "../consensus", version = "0.2" }
+nimiq-database = { path = "../database", version = "0.2" }
+nimiq-network-primitives = { path = "../network-primitives", version = "0.2", features = ["all"] }
+nimiq-primitives = { path = "../primitives", version = "0.2", features = ["networks"] }
+nimiq-mempool = { path = "../mempool", version = "0.2" }

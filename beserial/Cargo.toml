@@ -1,6 +1,6 @@
 [package]
 name = "beserial"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Marvin W <git@larma.de>"]
 edition = "2018"
 description = "A serializer that uses BigEndian encoding that also allows to specify types for length fields"

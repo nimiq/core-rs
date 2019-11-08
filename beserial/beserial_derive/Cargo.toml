@@ -1,6 +1,6 @@
 [package]
 name = "beserial_derive"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Marvin W <git@larma.de>"]
 edition = "2018"
 description = "Derive macros for beserial"
@@ -23,4 +23,4 @@ proc-macro = true
 proc-macro2 = "0.4"
 syn = { version = "0.15", features = ["extra-traits"] }
 quote = "0.6"
-beserial = { path = "..", version = "0.1" }
+beserial = { path = "..", version = "0.2" }

@@ -1,6 +1,6 @@
 [package]
 name = "nimiq-hash"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Pascal B <git@paberr.net>", "The Nimiq Core Development Team <info@nimiq.com>"]
 edition = "2018"
 description = "Common wrapper around hash implementations used in Nimiq"
@@ -21,6 +21,6 @@ blake2-rfc = "0.2"
 hex = "0.3"
 sha2 = "0.8"
 byteorder = "1.2"
-beserial = { path = "../beserial", version = "0.1" }
-nimiq-macros = { path = "../macros", version = "0.1" }
-libargon2-sys = { path = "../libargon2-sys", version = "0.1" }
+beserial = { path = "../beserial", version = "0.2" }
+nimiq-macros = { path = "../macros", version = "0.2" }
+libargon2-sys = { path = "../libargon2-sys", version = "0.2" }

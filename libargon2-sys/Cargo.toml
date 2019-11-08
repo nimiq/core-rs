@@ -1,6 +1,6 @@
 [package]
 name = "libargon2-sys"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["The Nimiq Core Development Team <info@nimiq.com>"]
 links = "argon2"
 build = "build.rs"

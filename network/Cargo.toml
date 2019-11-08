@@ -1,6 +1,6 @@
 [package]
 name = "nimiq-network"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["The Nimiq Core Development Team <info@nimiq.com>"]
 edition = "2018"
 description = "Nimiq's network implementation in Rust"
@@ -31,16 +31,16 @@ tokio-tls = "0.2"
 tokio-tungstenite = "0.8"
 tk-listen = "0.2.1"
 url = "1.7"
-beserial = { path = "../beserial", version = "0.1" }
-beserial_derive = { path = "../beserial/beserial_derive", version = "0.1" }
-nimiq-blockchain = { path = "../blockchain", version = "0.1" }
-nimiq-collections = { path = "../collections", version = "0.1" }
-nimiq-keys = { path = "../keys", version = "0.1" }
-nimiq-hash = { path = "../hash", version = "0.1" }
-nimiq-macros = { path = "../macros", version = "0.1" }
-nimiq-messages = { path = "../messages", version = "0.1" }
-nimiq-network-primitives = { path = "../network-primitives", version = "0.1", features = ["all"] }
-nimiq-utils = { path = "../utils", version = "0.1", features = ["timers", "observer", "mutable-once", "time", "unique-ptr", "iterators", "locking", "rate-limit", "unique-id"] }
+beserial = { path = "../beserial", version = "0.2" }
+beserial_derive = { path = "../beserial/beserial_derive", version = "0.2" }
+nimiq-blockchain = { path = "../blockchain", version = "0.2" }
+nimiq-collections = { path = "../collections", version = "0.2" }
+nimiq-keys = { path = "../keys", version = "0.2" }
+nimiq-hash = { path = "../hash", version = "0.2" }
+nimiq-macros = { path = "../macros", version = "0.2" }
+nimiq-messages = { path = "../messages", version = "0.2" }
+nimiq-network-primitives = { path = "../network-primitives", version = "0.2", features = ["all"] }
+nimiq-utils = { path = "../utils", version = "0.2", features = ["timers", "observer", "mutable-once", "time", "unique-ptr", "iterators", "locking", "rate-limit", "unique-id"] }
 
 [dependencies.tungstenite]
 version = "0.8"

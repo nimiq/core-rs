@@ -1,6 +1,6 @@
 [package]
 name = "nimiq-mnemonic"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Pascal B <git@paberr.net>", "The Nimiq Core Development Team <info@nimiq.com>"]
 edition = "2018"
 description = "Mnemonic helper library for Nimiq"
@@ -20,11 +20,11 @@ maintenance = { status = "experimental" }
 bit-vec = "0.5"
 hex = "0.3"
 unicode-normalization = "0.1"
-nimiq-hash = { path = "../hash", version = "0.1" }
-beserial = { path = "../beserial", version = "0.1" }
-nimiq-macros = { path = "../macros", version = "0.1" }
-nimiq-utils = { path = "../utils", version = "0.1", features = ["bit-vec", "crc"] }
-nimiq-key-derivation = { path = "../key-derivation", version = "0.1", optional = true }
+nimiq-hash = { path = "../hash", version = "0.2" }
+beserial = { path = "../beserial", version = "0.2" }
+nimiq-macros = { path = "../macros", version = "0.2" }
+nimiq-utils = { path = "../utils", version = "0.2", features = ["bit-vec", "crc"] }
+nimiq-key-derivation = { path = "../key-derivation", version = "0.2", optional = true }
 
 [features]
 default = ["key-derivation"]

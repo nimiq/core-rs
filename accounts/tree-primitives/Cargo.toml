@@ -1,6 +1,6 @@
 [package]
 name = "nimiq-tree-primitives"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["The Nimiq Core Development Team <info@nimiq.com>"]
 edition = "2018"
 description = "Accounts tree primitives for Nimiq's Rust implementation"
@@ -18,11 +18,11 @@ maintenance = { status = "experimental" }
 
 [dependencies]
 hex = "0.3"
-beserial = { path = "../../beserial", version = "0.1" }
-beserial_derive = { path = "../../beserial/beserial_derive", version = "0.1" }
-nimiq-keys = { path = "../../keys", version = "0.1" }
-nimiq-hash = { path = "../../hash", version = "0.1" }
-nimiq-account = { path = "../../primitives/account", version = "0.1" }
+beserial = { path = "../../beserial", version = "0.2" }
+beserial_derive = { path = "../../beserial/beserial_derive", version = "0.2" }
+nimiq-keys = { path = "../../keys", version = "0.2" }
+nimiq-hash = { path = "../../hash", version = "0.2" }
+nimiq-account = { path = "../../primitives/account", version = "0.2" }
 
 [dev-dependencies]
-nimiq-primitives = { path = "../../primitives", version = "0.1", features = ["coin"] }
+nimiq-primitives = { path = "../../primitives", version = "0.2", features = ["coin"] }

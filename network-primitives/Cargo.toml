@@ -1,6 +1,6 @@
 [package]
 name = "nimiq-network-primitives"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["The Nimiq Core Development Team <info@nimiq.com>"]
 edition = "2018"
 description = "Network primitives and constants for Nimiq"
@@ -23,15 +23,15 @@ lazy_static = "1.2"
 atomic = "0.4"
 url = "1.7"
 failure = "0.1"
-beserial = { path = "../beserial", version = "0.1" }
-beserial_derive = { path = "../beserial/beserial_derive", version = "0.1" }
-nimiq-keys = { path = "../keys", version = "0.1" }
-nimiq-hash = { path = "../hash", version = "0.1" }
-nimiq-block = { path = "../primitives/block", version = "0.1" }
-nimiq-transaction = { path = "../primitives/transaction", version = "0.1" }
-nimiq-primitives = { path = "../primitives", version = "0.1", features = ["coin", "networks"] }
-nimiq-utils = { path = "../utils", version = "0.1", features = ["observer", "crc", "time"] }
-nimiq-macros = { path = "../macros", version = "0.1" }
+beserial = { path = "../beserial", version = "0.2" }
+beserial_derive = { path = "../beserial/beserial_derive", version = "0.2" }
+nimiq-keys = { path = "../keys", version = "0.2" }
+nimiq-hash = { path = "../hash", version = "0.2" }
+nimiq-block = { path = "../primitives/block", version = "0.2" }
+nimiq-transaction = { path = "../primitives/transaction", version = "0.2" }
+nimiq-primitives = { path = "../primitives", version = "0.2", features = ["coin", "networks"] }
+nimiq-utils = { path = "../utils", version = "0.2", features = ["observer", "crc", "time"] }
+nimiq-macros = { path = "../macros", version = "0.2" }
 
 [features]
 default = ["all"]

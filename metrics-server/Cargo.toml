@@ -1,6 +1,6 @@
 [package]
 name = "nimiq-metrics-server"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["The Nimiq Core Development Team <info@nimiq.com>"]
 license = "Apache-2.0"
 edition = "2018"
@@ -22,9 +22,9 @@ futures = "0.1"
 log = "0.4"
 base64 = "0.10"
 failure = "0.1"
-nimiq-blockchain = { path = "../blockchain", version = "0.1", features = ["metrics"] }
-nimiq-consensus = { path = "../consensus", version = "0.1" }
-nimiq-network = { path = "../network", version = "0.1", features = ["metrics"] }
-nimiq-mempool = { path = "../mempool", version = "0.1" }
-nimiq-block = { path = "../primitives/block", version = "0.1" }
-beserial = { path = "../beserial", version = "0.1" }
+nimiq-blockchain = { path = "../blockchain", version = "0.2", features = ["metrics"] }
+nimiq-consensus = { path = "../consensus", version = "0.2" }
+nimiq-network = { path = "../network", version = "0.2", features = ["metrics"] }
+nimiq-mempool = { path = "../mempool", version = "0.2" }
+nimiq-block = { path = "../primitives/block", version = "0.2" }
+beserial = { path = "../beserial", version = "0.2" }

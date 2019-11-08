@@ -1,6 +1,6 @@
 [package]
 name = "nimiq-transaction"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["The Nimiq Core Development Team <info@nimiq.com>"]
 edition = "2018"
 description = "Transaction primitive to be used in Nimiq's Rust implementation"
@@ -18,12 +18,12 @@ maintenance = { status = "experimental" }
 bitflags = "1.0"
 log = "0.4"
 failure = "0.1"
-nimiq-hash = { path = "../../hash", version = "0.1" }
-nimiq-keys = { path = "../../keys", version = "0.1" }
-nimiq-utils = { path = "../../utils", version = "0.1", features = ["merkle"] }
-nimiq-primitives = { path = "..", version = "0.1", features = ["policy", "networks", "account", "coin"] }
-beserial = { path = "../../beserial", version = "0.1" }
-beserial_derive = { path = "../../beserial/beserial_derive", version = "0.1" }
+nimiq-hash = { path = "../../hash", version = "0.2" }
+nimiq-keys = { path = "../../keys", version = "0.2" }
+nimiq-utils = { path = "../../utils", version = "0.2", features = ["merkle"] }
+nimiq-primitives = { path = "..", version = "0.2", features = ["policy", "networks", "account", "coin"] }
+beserial = { path = "../../beserial", version = "0.2" }
+beserial_derive = { path = "../../beserial/beserial_derive", version = "0.2" }
 
 [dev-dependencies]
 hex = "0.3"

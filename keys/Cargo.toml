@@ -1,6 +1,6 @@
 [package]
 name = "nimiq-keys"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Pascal B <git@paberr.net>", "The Nimiq Core Development Team <info@nimiq.com>"]
 edition = "2018"
 description = "Ed25519 cryptographic key handling and signatures for Nimiq"
@@ -24,7 +24,7 @@ sha2 = "0.8"
 rand = "0.6"
 hex = "0.3"
 failure = "0.1"
-beserial = { path = "../beserial", version = "0.1" }
-beserial_derive = { path = "../beserial/beserial_derive", version = "0.1" }
-nimiq-hash = { path = "../hash", version = "0.1" }
-nimiq-macros = { path = "../macros", version = "0.1" }
+beserial = { path = "../beserial", version = "0.2" }
+beserial_derive = { path = "../beserial/beserial_derive", version = "0.2" }
+nimiq-hash = { path = "../hash", version = "0.2" }
+nimiq-macros = { path = "../macros", version = "0.2" }

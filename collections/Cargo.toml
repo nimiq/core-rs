@@ -1,6 +1,6 @@
 [package]
 name = "nimiq-collections"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Pascal B <git@paberr.net>"]
 edition = "2018"
 description = "A set of advanced collections for use in the Nimiq Rust implementation"

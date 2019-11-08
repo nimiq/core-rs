@@ -1,6 +1,6 @@
 [package]
 name = "nimiq-blockchain"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["The Nimiq Core Development Team <info@nimiq.com>"]
 edition = "2018"
 description = "Persistent block storage for Nimiq's Rust implementation"
@@ -21,20 +21,20 @@ parking_lot = "0.7"
 log = "0.4"
 hex = "0.3"
 failure = "0.1"
-beserial = { path = "../beserial", version = "0.1" }
-beserial_derive = { path = "../beserial/beserial_derive", version = "0.1" }
-nimiq-keys = { path = "../keys", version = "0.1" }
-nimiq-primitives = { path = "../primitives", version = "0.1" }
-nimiq-account = { path = "../primitives/account", version = "0.1" }
-nimiq-block = { path = "../primitives/block", version = "0.1" }
-nimiq-transaction = { path = "../primitives/transaction", version = "0.1" }
-nimiq-hash = { path = "../hash", version = "0.1" }
-nimiq-accounts = { path = "../accounts", version = "0.1" }
-nimiq-database = { path = "../database", version = "0.1", features = ["full-nimiq"] }
-nimiq-tree-primitives = { path = "../accounts/tree-primitives", version = "0.1" }
-fixed-unsigned = { path = "../fixed-unsigned", version = "0.1" }
-nimiq-utils = { path = "../utils", version = "0.1", features = ["observer", "unique-ptr", "iterators"] }
-nimiq-network-primitives = { path = "../network-primitives", version = "0.1", features = ["networks", "time"] }
+beserial = { path = "../beserial", version = "0.2" }
+beserial_derive = { path = "../beserial/beserial_derive", version = "0.2" }
+nimiq-keys = { path = "../keys", version = "0.2" }
+nimiq-primitives = { path = "../primitives", version = "0.2" }
+nimiq-account = { path = "../primitives/account", version = "0.2" }
+nimiq-block = { path = "../primitives/block", version = "0.2" }
+nimiq-transaction = { path = "../primitives/transaction", version = "0.2" }
+nimiq-hash = { path = "../hash", version = "0.2" }
+nimiq-accounts = { path = "../accounts", version = "0.2" }
+nimiq-database = { path = "../database", version = "0.2", features = ["full-nimiq"] }
+nimiq-tree-primitives = { path = "../accounts/tree-primitives", version = "0.2" }
+fixed-unsigned = { path = "../fixed-unsigned", version = "0.2" }
+nimiq-utils = { path = "../utils", version = "0.2", features = ["observer", "unique-ptr", "iterators"] }
+nimiq-network-primitives = { path = "../network-primitives", version = "0.2", features = ["networks", "time"] }
 
 [dev-dependencies]
 atomic = "0.4"

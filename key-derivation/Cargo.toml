@@ -1,6 +1,6 @@
 [package]
 name = "nimiq-key-derivation"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Pascal B <git@paberr.net>", "The Nimiq Core Development Team <info@nimiq.com>"]
 edition = "2018"
 description = "Helper library for key derivation in Nimiq"
@@ -19,9 +19,9 @@ maintenance = { status = "experimental" }
 [dependencies]
 regex = "1"
 byteorder = "1.2"
-beserial = { path = "../beserial", version = "0.1" }
-nimiq-hash = { path = "../hash", version = "0.1" }
-nimiq-keys = { path = "../keys", version = "0.1" }
+beserial = { path = "../beserial", version = "0.2" }
+nimiq-hash = { path = "../hash", version = "0.2" }
+nimiq-keys = { path = "../keys", version = "0.2" }
 
 [dev-dependencies]
 hex = "0.3"

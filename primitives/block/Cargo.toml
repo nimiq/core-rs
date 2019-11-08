@@ -1,6 +1,6 @@
 [package]
 name = "nimiq-block"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["The Nimiq Core Development Team <info@nimiq.com>"]
 edition = "2018"
 description = "Block primitives to be used in Nimiq's Rust implementation"
@@ -20,16 +20,16 @@ maintenance = { status = "experimental" }
 num-bigint = "0.2"
 log = "0.4"
 hex = "0.3"
-beserial = { path = "../../beserial", version = "0.1" }
-beserial_derive = { path = "../../beserial/beserial_derive", version = "0.1" }
-fixed-unsigned = { path = "../../fixed-unsigned", version = "0.1" }
-nimiq-hash = { path = "../../hash", version = "0.1" }
-nimiq-keys = { path = "../../keys", version = "0.1" }
-nimiq-utils = { path = "../../utils", version = "0.1", features = ["merkle"] }
-nimiq-primitives = { path = "..", version = "0.1", features = ["policy", "networks"] }
-nimiq-transaction = { path = "../transaction", version = "0.1" }
-nimiq-account = { path = "../account", version = "0.1" }
-nimiq-macros = { path = "../../macros", version = "0.1" }
+beserial = { path = "../../beserial", version = "0.2" }
+beserial_derive = { path = "../../beserial/beserial_derive", version = "0.2" }
+fixed-unsigned = { path = "../../fixed-unsigned", version = "0.2" }
+nimiq-hash = { path = "../../hash", version = "0.2" }
+nimiq-keys = { path = "../../keys", version = "0.2" }
+nimiq-utils = { path = "../../utils", version = "0.2", features = ["merkle"] }
+nimiq-primitives = { path = "..", version = "0.2", features = ["policy", "networks"] }
+nimiq-transaction = { path = "../transaction", version = "0.2" }
+nimiq-account = { path = "../account", version = "0.2" }
+nimiq-macros = { path = "../../macros", version = "0.2" }
 
 [dev-dependencies]
 num-traits = "0.2"

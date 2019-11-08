@@ -1,6 +1,6 @@
 [package]
 name = "nimiq-rpc-server"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["The Nimiq Core Development Team <info@nimiq.com>"]
 license = "Apache-2.0"
 edition = "2018"
@@ -25,15 +25,15 @@ hex = "0.3"
 failure = "0.1"
 parking_lot = "0.7"
 base64 = "0.10"
-beserial = { path = "../beserial", version = "0.1" }
-nimiq-consensus = { path = "../consensus", version = "0.1" }
-nimiq-blockchain = { path = "../blockchain", version = "0.1" }
-nimiq-mempool = { path = "../mempool", version = "0.1" }
-nimiq-network = { path = "../network", version = "0.1" }
-nimiq-hash = { path = "../hash", version = "0.1" }
-nimiq-network-primitives = { path = "../network-primitives", version = "0.1" }
-nimiq-block = { path = "../primitives/block", version = "0.1" }
-nimiq-transaction = { path = "../primitives/transaction", version = "0.1" }
-nimiq-keys = { path = "../keys", version = "0.1" }
-nimiq-block-production = { path = "../block-production", version = "0.1" }
-nimiq-utils = { path = "../utils", version = "0.1", features = ["merkle", "time"] }
+beserial = { path = "../beserial", version = "0.2" }
+nimiq-consensus = { path = "../consensus", version = "0.2" }
+nimiq-blockchain = { path = "../blockchain", version = "0.2" }
+nimiq-mempool = { path = "../mempool", version = "0.2" }
+nimiq-network = { path = "../network", version = "0.2", features = ["metrics"] }
+nimiq-hash = { path = "../hash", version = "0.2" }
+nimiq-network-primitives = { path = "../network-primitives", version = "0.2" }
+nimiq-block = { path = "../primitives/block", version = "0.2" }
+nimiq-transaction = { path = "../primitives/transaction", version = "0.2" }
+nimiq-keys = { path = "../keys", version = "0.2" }
+nimiq-block-production = { path = "../block-production", version = "0.2" }
+nimiq-utils = { path = "../utils", version = "0.2", features = ["merkle", "time"] }

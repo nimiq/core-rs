@@ -1,6 +1,6 @@
 [package]
 name = "nimiq-mempool"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["The Nimiq Core Development Team <info@nimiq.com>"]
 edition = "2018"
 description = "Mempool implementation for Nimiq"
@@ -19,19 +19,19 @@ maintenance = { status = "experimental" }
 [dependencies]
 log = "0.4"
 parking_lot = "0.7"
-beserial = { path = "../beserial", version = "0.1" }
-nimiq-hash = { path = "../hash", version = "0.1" }
-nimiq-keys = { path = "../keys", version = "0.1" }
-nimiq-account = { path = "../primitives/account", version = "0.1" }
-nimiq-block = { path = "../primitives/block", version = "0.1" }
-nimiq-transaction = { path = "../primitives/transaction", version = "0.1" }
-nimiq-utils = { path = "../utils", version = "0.1", features = ["observer", "timers", "mutable-once"] }
-nimiq-accounts = { path = "../accounts", version = "0.1" }
-nimiq-blockchain = { path = "../blockchain", version = "0.1" }
-nimiq-collections = { path = "../collections", version = "0.1" }
-nimiq-primitives = { path = "../primitives", version = "0.1", features = ["coin", "networks"] }
+beserial = { path = "../beserial", version = "0.2" }
+nimiq-hash = { path = "../hash", version = "0.2" }
+nimiq-keys = { path = "../keys", version = "0.2" }
+nimiq-account = { path = "../primitives/account", version = "0.2" }
+nimiq-block = { path = "../primitives/block", version = "0.2" }
+nimiq-transaction = { path = "../primitives/transaction", version = "0.2" }
+nimiq-utils = { path = "../utils", version = "0.2", features = ["observer", "timers", "mutable-once"] }
+nimiq-accounts = { path = "../accounts", version = "0.2" }
+nimiq-blockchain = { path = "../blockchain", version = "0.2" }
+nimiq-collections = { path = "../collections", version = "0.2" }
+nimiq-primitives = { path = "../primitives", version = "0.2", features = ["coin", "networks"] }
 
 [dev-dependencies]
 hex = "0.3"
-nimiq-database = { path = "../database", version = "0.1" }
-nimiq-network-primitives = { path = "../network-primitives", version = "0.1" }
+nimiq-database = { path = "../database", version = "0.2" }
+nimiq-network-primitives = { path = "../network-primitives", version = "0.2" }

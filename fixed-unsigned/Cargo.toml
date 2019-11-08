@@ -1,6 +1,6 @@
 [package]
 name = "fixed-unsigned"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Janosch Gräf <janosch.graef@cispa.saarland>"]
 edition = "2018"
 description = "Fixed precision decimal numbers for Nimiq's Rust implementation"
