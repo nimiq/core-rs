@@ -5,8 +5,6 @@
 extern crate beserial_derive;
 #[macro_use]
 extern crate bitflags;
-#[macro_use]
-extern crate enum_display_derive;
 extern crate nimiq_block as block;
 extern crate nimiq_hash as hash;
 extern crate nimiq_keys as keys;
@@ -41,7 +39,7 @@ use tree_primitives::accounts_tree_chunk::AccountsTreeChunk;
 use utils::crc::Crc32Computer;
 use utils::observer::PassThroughNotifier;
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize, Display)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
 #[repr(u64)]
 #[beserial(uvar)]
 pub enum MessageType {
@@ -82,6 +80,49 @@ pub enum MessageType {
     Head = 61,
 
     VerAck = 90,
+}
+
+impl Display for MessageType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Version => write!(f, "version"),
+            Self::Inv => write!(f, "inv"),
+            Self::GetData => write!(f, "get-data"),
+            Self::GetHeader => write!(f, "get-header"),
+            Self::NotFound => write!(f, "not-found"),
+            Self::GetBlocks => write!(f, "get-blocks"),
+            Self::Block => write!(f, "block"),
+            Self::Header => write!(f, "header"),
+            Self::Tx => write!(f, "tx"),
+            Self::Mempool => write!(f, "mempool"),
+            Self::Reject => write!(f, "reject"),
+            Self::Subscribe => write!(f, "subscribe"),
+
+            Self::Addr => write!(f, "addr"),
+            Self::GetAddr => write!(f, "get-addr"),
+            Self::Ping => write!(f, "ping"),
+            Self::Pong => write!(f, "pong"),
+
+            Self::Signal => write!(f, "signal"),
+
+            Self::GetChainProof => write!(f, "get-chain-proof"),
+            Self::ChainProof => write!(f, "chain-proof"),
+            Self::GetAccountsProof => write!(f, "get-accounts-proof"),
+            Self::AccountsProof => write!(f, "accounts-proof"),
+            Self::GetAccountsTreeChunk => write!(f, "get-accounts-tree-chunk"),
+            Self::AccountsTreeChunk => write!(f, "accounts-tree-chunk"),
+            Self::GetTransactionsProof => write!(f, "get-transactions-proof"),
+            Self::TransactionsProof => write!(f, "transactions-proof"),
+            Self::GetTransactionReceipts => write!(f, "get-transaction-receipts"),
+            Self::TransactionReceipts => write!(f, "transaction-receipts"),
+            Self::GetBlockProof => write!(f, "get-block-proof"),
+            Self::BlockProof => write!(f, "block-proof"),
+
+            Self::GetHead => write!(f, "get-head"),
+            Self::Head => write!(f, "head"),
+            Self::VerAck => write!(f, "verack"),
+        }
+    }
 }
 
 #[derive(Clone, Debug)]

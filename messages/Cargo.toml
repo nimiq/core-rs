@@ -22,7 +22,6 @@ byteorder = "1.2"
 hex = "0.3"
 parking_lot = "0.7"
 rand = "0.6"
-enum-display-derive = "0.1"
 beserial = { path = "../beserial", version = "0.2" }
 beserial_derive = { path = "../beserial/beserial_derive", version = "0.2" }
 nimiq-hash = { path = "../hash", version = "0.2" }
