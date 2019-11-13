@@ -209,7 +209,7 @@ fn run() -> Result<(), Error> {
     // Add TLS configuration, if present
     // NOTE: Currently we only need to set TLS settings for Wss
     if settings.network.protocol == s::Protocol::Wss {
-        if let Some(tls_settings) = settings.network.tls {
+        if let Some(ref tls_settings) = settings.network.tls {
             client_builder.with_tls_identity(&tls_settings.identity_file, &tls_settings.identity_password);
         }
         else {
@@ -284,7 +284,12 @@ fn run() -> Result<(), Error> {
                 .into_ip_address().unwrap();
             let port = metrics_settings.port.unwrap_or(s::DEFAULT_METRICS_PORT);
             info!("Starting metrics server listening on port {}", port);
-            other_futures.push(metrics_server(Arc::clone(&consensus), bind, port, metrics_settings.password)?);
+            if settings.network.protocol == s::Protocol::Wss {
+                let tls_settings = settings.network.tls.expect("Using Wss protocol, but TLS settings are missing from the config file");
+                other_futures.push(metrics_server(Arc::clone(&consensus), bind, port, metrics_settings.password, tls_settings.identity_file, tls_settings.identity_password)?);
+            } else {
+                error!("Cannot provide metrics when running without a certificate");
+            }
         }
     }
     // If the metrics server is enabled, but the client is not compiled with it, inform the user

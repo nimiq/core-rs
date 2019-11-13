@@ -22,6 +22,10 @@ futures = "0.1"
 log = "0.4"
 base64 = "0.10"
 failure = "0.1"
+tokio = "0.1"
+tokio-tls = "0.2"
+native-tls = "0.2"
+
 nimiq-blockchain = { path = "../blockchain", version = "0.2", features = ["metrics"] }
 nimiq-consensus = { path = "../consensus", version = "0.2" }
 nimiq-network = { path = "../network", version = "0.2", features = ["metrics"] }
