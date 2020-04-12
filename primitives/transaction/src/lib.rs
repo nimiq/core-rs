@@ -452,6 +452,8 @@ pub enum TransactionError {
     #[fail(display = "Invalid transaction data")]
     InvalidData,
     #[fail(display = "Invalid serialization")]
+    InvalidAlgorithm,
+    #[fail(display = "Invalid algorithm")]
     InvalidSerialization(#[cause] SerializingError),
 }
 

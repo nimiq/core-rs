@@ -28,7 +28,8 @@ impl AccountType {
 #[repr(u8)]
 pub enum HashAlgorithm {
     Blake2b = 1,
-    Sha256 = 3
+    Sha256 = 3,
+    Sha512 = 4
 }
 
 #[derive(Clone, Copy, PartialEq, PartialOrd, Eq, Ord, Debug, Serialize, Deserialize)]

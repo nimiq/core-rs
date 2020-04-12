@@ -1,5 +1,5 @@
 use beserial::Deserialize;
-use hash::{Blake2bHasher, Hasher, Sha256Hasher};
+use hash::{Blake2bHasher, Hasher, Sha256Hasher, Blake2bHash, Sha256Hash, Sha512Hash};
 use keys::Address;
 use primitives::account::{AccountType, AnyHash, HashAlgorithm, ProofType};
 use primitives::coin::Coin;
@@ -71,6 +71,9 @@ impl AccountTransactionVerification for AccountType {
                                 },
                                 HashAlgorithm::Sha256 => {
                                     pre_image = Sha256Hasher::default().digest(&pre_image[..]).into();
+                                },
+                                HashAlgorithm::Sha512 => {
+                                    return Err(TransactionError::InvalidAlgorithm);
                                 }
                             }
                         }
@@ -142,12 +145,25 @@ pub fn parse_and_verify_htlc_creation_transaction(transaction: &Transaction) -> 
         return Err(TransactionError::InvalidForRecipient);
     }
 
-    if transaction.data.len() != (20 * 2 + 1 + 32 + 1 + 4) {
+    let (sender, recipient, hash_algorithm, hash_root, hash_count, timeout) = parse_htlc_creation_transaction(transaction)?;
+
+    let hash_size: usize;
+    match hash_algorithm {
+        HashAlgorithm::Blake2b => {
+            hash_size = Blake2bHash::SIZE;
+        },
+        HashAlgorithm::Sha256 => {
+            hash_size = Sha256Hash::SIZE;
+        },
+        HashAlgorithm::Sha512 => {
+            hash_size = Sha512Hash::SIZE;
+        }
+    }
+
+    if transaction.data.len() != (20 * 2 + 1 + hash_size + 1 + 4) {
         warn!("Invalid creation data: invalid length");
         return Err(TransactionError::InvalidData);
     }
-
-    let (sender, recipient, hash_algorithm, hash_root, hash_count, timeout) = parse_htlc_creation_transaction(transaction)?;
 
     if hash_count == 0 {
         warn!("Invalid creation data: hash_count may not be zero");
