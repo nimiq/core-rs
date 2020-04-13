@@ -142,7 +142,7 @@ pub fn parse_and_verify_htlc_creation_transaction(transaction: &Transaction) -> 
         return Err(TransactionError::InvalidForRecipient);
     }
 
-    if transaction.data.len() != (20 * 2 + 1 + 32 + 1 + 4) {
+    if transaction.data.len() != (20 * 2 + 1 + 32 + 1 + 4) && transaction.data.len() != (20 * 2 + 1 + 64 + 1 + 4) {
         warn!("Invalid creation data: invalid length");
         return Err(TransactionError::InvalidData);
     }
