@@ -71,6 +71,9 @@ impl AccountTransactionVerification for AccountType {
                                 },
                                 HashAlgorithm::Sha256 => {
                                     pre_image = Sha256Hasher::default().digest(&pre_image[..]).into();
+                                },
+                                HashAlgorithm::Sha512 => {
+                                    return Err(TransactionError::InvalidAlgorithm);
                                 }
                             }
                         }
