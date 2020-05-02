@@ -16,9 +16,11 @@ stages:
     - rustc --version
     - cargo --version
     - cargo build --all
+    - cargo build --all --release
   artifacts:
     paths:
       - target/debug/nimiq-client
+      - target/release/nimiq-client
 
 .test:
   stage: test
