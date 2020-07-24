@@ -2,10 +2,7 @@ use ed25519_dalek::SignatureError;
 use failure::Fail;
 use hex::FromHexError;
 
-#[derive(Clone, Copy, Eq, PartialEq, Hash, Debug, Fail)]
-#[fail(display = "{}", _0)]
-pub struct KeysError(pub(crate) SignatureError);
-
+pub type KeysError = SignatureError;
 
 #[derive(Debug, Fail)]
 pub enum ParseError {

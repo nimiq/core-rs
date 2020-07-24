@@ -3,6 +3,7 @@ use beserial::{Serialize, SerializingError, Deserialize, ReadBytesExt, WriteByte
 use hex::FromHex;
 
 use crate::errors::{KeysError, ParseError};
+use std::convert::TryFrom;
 
 #[derive(Debug, Clone)]
 pub struct Signature(pub(in super) ed25519_dalek::Signature);
@@ -18,7 +19,7 @@ impl Signature {
 
     #[inline]
     pub fn from_bytes(bytes: &[u8]) -> Result<Self, KeysError> {
-        Ok(Signature(ed25519_dalek::Signature::from_bytes(bytes).map_err(KeysError)?))
+        Ok(Signature(ed25519_dalek::Signature::try_from(bytes)?))
     }
 }
 
@@ -40,13 +41,13 @@ impl FromHex for Signature {
 
 impl<'a> From<&'a [u8; Self::SIZE]> for Signature {
     fn from(bytes: &'a [u8; Self::SIZE]) -> Self {
-        Signature(ed25519_dalek::Signature::from_bytes(bytes).unwrap())
+        Signature::from(*bytes)
     }
 }
 
 impl From<[u8; Self::SIZE]> for Signature {
     fn from(bytes: [u8; Self::SIZE]) -> Self {
-        Signature::from(&bytes)
+        Signature(ed25519_dalek::Signature::from(bytes))
     }
 }
 
