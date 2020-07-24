@@ -1,4 +1,3 @@
-use ed25519_dalek;
 use beserial::{Serialize, SerializingError, Deserialize, ReadBytesExt, WriteBytesExt};
 use hex::FromHex;
 

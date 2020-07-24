@@ -1,4 +1,3 @@
-use ed25519_dalek;
 use rand::rngs::OsRng;
 
 use beserial::{Deserialize, Serialize};

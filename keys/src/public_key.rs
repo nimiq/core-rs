@@ -1,7 +1,7 @@
 use std::cmp::Ordering;
 use std::io;
 use hex::FromHex;
-use ed25519_dalek::{self, Verifier};
+use ed25519_dalek::Verifier;
 
 use beserial::{Deserialize, ReadBytesExt, Serialize, SerializingError, WriteBytesExt};
 

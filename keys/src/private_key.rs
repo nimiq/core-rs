@@ -3,7 +3,6 @@ use std::fmt::Error;
 use std::fmt::Formatter;
 use std::io;
 
-use ed25519_dalek;
 use rand::rngs::OsRng;
 
 use beserial::{Deserialize, ReadBytesExt, Serialize, SerializingError, WriteBytesExt};
