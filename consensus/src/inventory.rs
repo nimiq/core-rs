@@ -529,8 +529,6 @@ impl InventoryAgent {
             }
         }
 
-        self.inv_mgr.write().note_vector_received(&vector);
-
         // Process block & notify.
         let result = self.blockchain.push(block);
         self.notifier.read().notify(InventoryEvent::BlockProcessed(vector.hash.clone(), result));
@@ -555,16 +553,8 @@ impl InventoryAgent {
             warn!("Unsolicited transaction from {} - discarding", self.peer.peer_address());
             return;
         }
-        // Give up read lock before notifying.
-        drop(state);
-
-        self.inv_mgr.write().note_vector_received(&vector);
-
-        // Mark object as received.
-        self.on_object_received(&vector);
 
         // Check whether we subscribed for this transaction.
-        let state = self.state.read();
         if state.local_subscription.matches_transaction(&msg.transaction) {
             // Give up read lock before pushing transaction.
             drop(state);
@@ -577,7 +567,13 @@ impl InventoryAgent {
 
             warn!("We're not subscribed to this transaction from {} - discarding and closing the channel", self.peer.peer_address());
             self.peer.channel.close(CloseType::ReceivedTransactionNotMatchingOurSubscription);
+        } else {
+            // Give up read lock.
+            drop(state);
         }
+
+        // Mark object as received.
+        self.on_object_received(&vector);
     }
 
     fn on_mempool(&self) {
