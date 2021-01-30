@@ -24,6 +24,7 @@ use super::{
     handler::{DiscoveryHandler, HandlerInEvent, HandlerOutEvent},
     peer_contacts::{PeerContactBook, Protocols, Services},
 };
+use libp2p::swarm::AddressScore;
 
 #[derive(Clone, Debug)]
 pub struct DiscoveryConfig {
@@ -189,7 +190,7 @@ impl NetworkBehaviour for DiscoveryBehaviour {
             }
             HandlerOutEvent::ObservedAddresses { observed_addresses } => {
                 for address in observed_addresses {
-                    self.events.push_back(NetworkBehaviourAction::ReportObservedAddr { address });
+                    self.events.push_back(NetworkBehaviourAction::ReportObservedAddr { address, score: AddressScore::Infinite });
                 }
             }
             HandlerOutEvent::Update => self.events.push_back(NetworkBehaviourAction::GenerateEvent(DiscoveryEvent::Update)),

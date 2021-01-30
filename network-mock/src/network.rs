@@ -225,10 +225,6 @@ impl Network for MockNetwork {
         }
     }
 
-    async fn validate_message(&self, _id: Self::PubsubId) -> Result<bool, Self::Error> {
-        unimplemented!()
-    }
-
     async fn dht_get<K, V>(&self, k: &K) -> Result<Option<V>, Self::Error>
     where
         K: AsRef<[u8]> + Send + Sync,

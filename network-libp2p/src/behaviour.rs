@@ -96,7 +96,8 @@ impl NimiqBehaviour {
 
         let store = MemoryStore::new(peer_id.clone());
         let kademlia = Kademlia::with_config(peer_id, store, config.kademlia);
-        let gossipsub = Gossipsub::new(MessageAuthenticity::Signed(config.keypair), config.gossipsub);
+        let gossipsub = Gossipsub::new(MessageAuthenticity::Signed(config.keypair), config.gossipsub)
+            .expect("Failed to build Gossipsub");
 
         Self {
             discovery,

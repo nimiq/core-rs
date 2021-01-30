@@ -85,8 +85,6 @@ pub trait Network: Send + Sync + 'static {
     where
         T: Topic + Sync;
 
-    async fn validate_message(&self, id: Self::PubsubId) -> Result<bool, Self::Error>;
-
     async fn dht_get<K, V>(&self, k: &K) -> Result<Option<V>, Self::Error>
     where
         K: AsRef<[u8]> + Send + Sync,

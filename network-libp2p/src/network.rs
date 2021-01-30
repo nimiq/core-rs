@@ -41,6 +41,8 @@ use crate::{
     message::behaviour::MessageConfig,
     message::peer::Peer,
 };
+use libp2p::core::connection::ConnectionLimits;
+use libp2p::gossipsub::{GossipsubConfigBuilder, IdentTopic};
 
 pub struct Config {
     pub keypair: Keypair,
@@ -58,8 +60,10 @@ pub struct Config {
 
 impl Config {
     pub fn new(keypair: Keypair, peer_contact: PeerContact, genesis_hash: Blake2bHash) -> Self {
-        let mut gossipsub_config = GossipsubConfig::default();
-        gossipsub_config.validate_messages = true;
+        let mut gossipsub_config = GossipsubConfigBuilder::default()
+            .validate_messages()
+            .build()
+            .expect("Failed to build libp2p config");
 
         Self {
             keypair,
@@ -102,6 +106,9 @@ pub enum NetworkError {
 
     #[error("Gossipsub Publish error: {0:?}")]
     GossipsubPublish(libp2p::gossipsub::error::PublishError),
+
+    #[error("Gossipsub Subscription error: {0:?}")]
+    GossipsubSub(libp2p::gossipsub::error::SubscriptionError),
 }
 
 impl From<libp2p::kad::store::Error> for NetworkError {
@@ -125,6 +132,12 @@ impl From<libp2p::kad::PutRecordError> for NetworkError {
 impl From<libp2p::gossipsub::error::PublishError> for NetworkError {
     fn from(e: libp2p::gossipsub::error::PublishError) -> Self {
         Self::GossipsubPublish(e)
+    }
+}
+
+impl From<libp2p::gossipsub::error::SubscriptionError> for NetworkError {
+    fn from(e: libp2p::gossipsub::error::SubscriptionError) -> Self {
+        Self::GossipsubSub(e)
     }
 }
 
@@ -160,11 +173,6 @@ pub enum NetworkAction {
     },
     NetworkInfo {
         output: oneshot::Sender<NetworkInfo>,
-    },
-    Validate {
-        message_id: MessageId,
-        source: PeerId,
-        output: oneshot::Sender<Result<bool, NetworkError>>,
     },
 }
 
@@ -227,8 +235,6 @@ impl Network {
     ///  - `config`: The network configuration, containing key pair, and other behaviour-specific configuration.
     ///
     pub async fn new(listen_addresses: Vec<Multiaddr>, clock: Arc<OffsetTime>, config: Config) -> Self {
-        assert!(!config.gossipsub.hash_topics, "Hash topics not supported");
-
         let min_peers = config.min_peers;
 
         let swarm = Self::new_swarm(listen_addresses, clock, config);
@@ -288,9 +294,10 @@ impl Network {
 
         // TODO add proper config
         let mut swarm = SwarmBuilder::new(transport, behaviour, local_peer_id)
-            .incoming_connection_limit(5)
-            .outgoing_connection_limit(2)
-            .peer_connection_limit(1)
+            .connection_limits(ConnectionLimits::default()
+                .with_max_established_incoming(Some(5))
+                .with_max_established_outgoing(Some(2))
+                .with_max_established_per_peer(Some(1)))
             .build();
 
         for listen_addr in listen_addresses {
@@ -343,7 +350,7 @@ impl Network {
             SwarmEvent::ConnectionEstablished { peer_id, endpoint, .. } => {
                 swarm.kademlia.add_address(&peer_id, endpoint.get_remote_address().clone());
 
-                let num_peers = Swarm::network_info(swarm).num_connections_established;
+                let num_peers = Swarm::network_info(swarm).num_peers();
 
                 if !state.is_connected() {
                     log::info!("Connected to {} peers", num_peers);
@@ -402,18 +409,18 @@ impl Network {
                     }
                     NimiqEvent::Gossip(event) => {
                         match event {
-                            GossipsubEvent::Message(peer_id, msg_id, msg) => {
-                                log::debug!("Received message {:?} from peer {:?}: {:?}", msg_id, peer_id, msg);
-                                for topic in msg.topics.iter() {
-                                    if let Some(topic_info) = state.gossip_topics.get_mut(&topic) {
-                                        let (output, validate) = topic_info;
-                                        output.send((msg.clone(), msg_id.clone(), peer_id.clone())).await.ok();
-                                        if !&*validate {
-                                            swarm.gossipsub.validate_message(&msg_id, &peer_id);
-                                        }
-                                    } else {
-                                        log::warn!("Unknown topic hash: {:?}", topic);
+                            GossipsubEvent::Message { propagation_source, message_id, message } => {
+                                log::debug!("Received message {:?} from peer {:?}: {:?}", message_id, propagation_source, message);
+                                if let Some(topic_info) = state.gossip_topics.get_mut(&message.topic) {
+                                    let (output, validate) = topic_info;
+                                    output.send((message.clone(), message_id.clone(), propagation_source.clone())).await.ok();
+                                    /* TODO Message validation
+                                    if !&*validate {
+                                        swarm.gossipsub.validate_message(&message_id, &propagation_source);
                                     }
+                                    */
+                                } else {
+                                    log::warn!("Unknown topic hash: {:?}", &message.topic);
                                 }
                             }
                             GossipsubEvent::Subscribed { peer_id, topic } => {
@@ -470,9 +477,9 @@ impl Network {
                 }
             }
             NetworkAction::Subscribe { topic_name, validate, output } => {
-                let topic = GossipsubTopic::new(topic_name.clone());
-                if swarm.gossipsub.subscribe(topic.clone()) {
-                    state.gossip_topics.insert(topic.no_hash(), (output, validate));
+                let topic = IdentTopic::new(topic_name.clone());
+                if swarm.gossipsub.subscribe(&topic).map_err(Into::into)? {
+                    state.gossip_topics.insert(topic.hash(), (output, validate));
                 } else {
                     log::warn!("Already subscribed to topic: {:?}", topic_name);
                 }
@@ -480,13 +487,10 @@ impl Network {
             NetworkAction::Publish { topic_name, data, output } => {
                 // TODO: Check if we're subscribed to the topic, otherwise we can't publish
                 let topic = GossipsubTopic::new(topic_name);
-                output.send(swarm.gossipsub.publish(&topic, data).map_err(Into::into)).ok();
+                output.send(swarm.gossipsub.publish(topic, data).map(|_| ()).map_err(Into::into)).ok();
             }
             NetworkAction::NetworkInfo { output } => {
                 output.send(Swarm::network_info(swarm)).ok();
-            }
-            NetworkAction::Validate { message_id, source, output } => {
-                output.send(Ok(swarm.gossipsub.validate_message(&message_id, &source))).ok();
             }
         }
 
@@ -567,22 +571,6 @@ impl NetworkInterface for Network {
             .send(NetworkAction::Publish {
                 topic_name: topic.topic(),
                 data: buf,
-                output: output_tx,
-            })
-            .await?;
-
-        output_rx.await?
-    }
-
-    async fn validate_message(&self, id: Self::PubsubId) -> Result<bool, Self::Error> {
-        let (output_tx, output_rx) = oneshot::channel();
-
-        self.action_tx
-            .lock()
-            .await
-            .send(NetworkAction::Validate {
-                message_id: id.message_id,
-                source: id.propagation_source,
                 output: output_tx,
             })
             .await?;

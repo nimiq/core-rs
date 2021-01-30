@@ -459,10 +459,6 @@ impl NetworkInterface for Network {
         unimplemented!()
     }
 
-    async fn validate_message(&self, _id: Self::PubsubId) -> Result<bool, Self::Error> {
-        unimplemented!()
-    }
-
     async fn dht_get<K, V>(&self, _k: &K) -> Result<Option<V>, Self::Error>
     where
         K: AsRef<[u8]> + Send + Sync,
