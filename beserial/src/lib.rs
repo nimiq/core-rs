@@ -52,7 +52,6 @@ impl From<std::io::Error> for SerializingError {
 }
 
 // TODO: Remove
-#[deprecated]
 impl From<SerializingError> for std::io::Error {
     fn from(_: SerializingError) -> Self {
         std::io::Error::from(std::io::ErrorKind::Other)

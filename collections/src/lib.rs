@@ -1,5 +1,4 @@
 // Required for LinkedList.
-#![feature(box_into_raw_non_null)]
 #![feature(specialization)]
 
 pub mod linked_list;
