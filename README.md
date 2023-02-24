@@ -6,7 +6,8 @@
 
 **[Nimiq](https://nimiq.com/)**  is a frictionless payment protocol for the web.
 
-This repository is currently in release-candidate phase. If you need a proven stable release to run in a production environment, please use the [JavaScript implementation](https://github.com/nimiq/core-js/) instead. Only use this if you can tolerate bugs and want to help with testing the Nimiq Rust implementation.
+This repository is archived. You can use the [JavaScript implementation](https://github.com/nimiq/core-js/) instead.
+Or if you are looking for the [Albatross Rust implementation](https://github.com/nimiq/core-rs-albatross/), check the corresponding repository.
 
 The Nimiq Rust client comes without wallet and can currently not be used to send transactions. As a back-bone node it is more performant than the JavaScript implementation though.
 
