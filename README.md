@@ -27,7 +27,7 @@ The Nimiq Rust client comes without wallet and can currently not be used to send
 
 ## Install
 
-Besides [Rust nightly](https://www.rust-lang.org/learn/get-started#installing-rust) itself, the following packages are required to be able to compile this source code:
+Around 2GB of RAM is needed to compile. Besides [Rust nightly](https://www.rust-lang.org/learn/get-started#installing-rust) itself, the following packages are required to be able to compile this source code:
 
 - `gcc`
 - `pkg-config`
